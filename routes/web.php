@@ -19,10 +19,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-    Route::get('/bk', function () {
-        return Inertia::render('Bk');
-    })->name('bk');
-    Route::get('/payments', function () {
-        return Inertia::render('Payments');
-    })->name('payments');
+
+    Route::prefix('bk')->group(function () {
+        Route::get('/', [\App\Http\Controllers\BkController::class, 'index'])->name('bk');
+        Route::get('/show/{id}', [\App\Http\Controllers\BkController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('payments')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('payments');
+    });
 });
