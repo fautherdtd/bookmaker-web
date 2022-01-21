@@ -37,7 +37,7 @@
                         </div>
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="currency" value="Валюта" />
-                            <jet-input :disabled id="currency" type="text" class="mt-1 block w-full" v-model="form.currency" />
+                            <jet-input id="currency" type="text" class="mt-1 block w-full" v-model="form.currency" />
                             <jet-input-error :message="form.errors.currency" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
