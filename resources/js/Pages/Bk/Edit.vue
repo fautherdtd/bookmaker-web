@@ -1,0 +1,125 @@
+<template>
+    <app-layout title="БК">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">БК - {{ item['data']['drop'] }}</h2>
+        </template>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
+                <jet-form-section @submitted="editBk">
+                    <template #title>Редактирование БК</template>
+                    <template #description>
+                        <h2 class="text-lg font-bold mb-4"><b>ОБЩАЯ ИНФОРМАЦИЯ:</b></h2>
+                        <p><b>Страна:</b> {{ item['data']['country']['name'] }}</p>
+                        <p><b>ФИО:</b> {{ item['data']['drop'] }}</p>
+                        <p><b>Дроповод:</b> {{ item['data']['drop_guide'] }}</p>
+                        <p><b>БК:</b>  {{ item['data']['bk'] }}</p>
+                    </template>
+                    <template #form>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="email" value="Почта" />
+                            <jet-input id="email" type="text" class="mt-1 block w-full" v-model="form.email" />
+                            <jet-input-error :message="form.errors.email" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="password" value="Пароль" />
+                            <jet-input id="password" type="text" class="mt-1 block w-full" v-model="form.password" />
+                            <jet-input-error :message="form.errors.password" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="info" value="Доп. информация" />
+                            <jet-input id="info" type="text" class="mt-1 block w-full" v-model="form.info" />
+                            <jet-input-error :message="form.errors.info" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="sum" value="Сумма" />
+                            <jet-input id="sum" type="text" class="mt-1 block w-full" v-model="form.sum" />
+                            <jet-input-error :message="form.errors.sum" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="currency" value="Валюта" />
+                            <jet-input :disabled id="currency" type="text" class="mt-1 block w-full" v-model="form.currency" />
+                            <jet-input-error :message="form.errors.currency" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="status" value="Статус" />
+                            <select name="status" id="status" v-model="form.status">
+                                <option value="user">Сотрудник</option>
+                                <option value="administrator">Администратор</option>
+                            </select>
+                            <jet-input-error :message="form.errors.status" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <jet-label for="comment" value="Комментарий" />
+                            <textarea name="comment" id="comment" v-model="form.comment"
+                                      class="border-gray-300 w-full focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
+                            <jet-input-error :message="form.errors.comment" class="mt-2" />
+                        </div>
+                    </template>
+                    <template #actions>
+                        <jet-action-message :on="form.recentlySuccessful" class="mr-3">
+                            БК отредактирован.
+                        </jet-action-message>
+                        <jet-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                            Сохранить
+                        </jet-button>
+                    </template>
+                </jet-form-section>
+            </div>
+        </div>
+    </app-layout>
+</template>
+
+<script>
+import { defineComponent } from 'vue'
+import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
+import JetFormSection from '@/Jetstream/FormSection.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
+import JetActionMessage from '@/Jetstream/ActionMessage.vue'
+import JetButton from '@/Jetstream/Button.vue'
+import JetInput from '@/Jetstream/Input.vue'
+import JetInputError from '@/Jetstream/InputError.vue'
+import JetLabel from '@/Jetstream/Label.vue'
+
+export default defineComponent({
+    components: {
+        AppLayout,
+        JetSecondaryButton,
+        JetFormSection,
+        JetActionMessage,
+        JetButton,
+        JetInput,
+        JetInputError,
+        JetLabel,
+    },
+    data: function () {
+        return {
+            form: this.$inertia.form({
+                email: this.item.data.email,
+                password: this.item.data.password,
+                info: this.item.data.info,
+                sum: this.item.data.sum,
+                currency: this.item.data.currency,
+                status: this.item.data.status,
+                comment: null,
+            }),
+        }
+    },
+    methods: {
+        editBk() {
+            this.form.post(route('user.store'), {
+                errorBag: 'editBk',
+                onSuccess: () => this.form.reset(),
+                onError: () => {
+                }
+            })
+        },
+    },
+    props: {
+        item: Object
+    }
+})
+</script>
+
+<style scoped>
+
+</style>

@@ -22,11 +22,14 @@
                                 <jet-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                                     Дашбоард
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('bk')" :active="route().current('bk')">
+                                <jet-nav-link :href="route('bk.index')" :active="route().current('bk.*')">
                                     БК
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('payments')" :active="route().current('payments')">
+                                <jet-nav-link :href="route('payment.index')" :active="route().current('payment.*')">
                                     Платежка
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('user.index')" :active="route().current('user.*')">
+                                    Пользователи
                                 </jet-nav-link>
                             </div>
                         </div>

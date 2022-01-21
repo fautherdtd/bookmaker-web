@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreatePaymentsTable extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.3
      *
      * @return void
      */
@@ -15,6 +15,23 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('country_id');
+            $table->string('drop');
+            $table->bigInteger('type_id');
+            $table->foreign('type_id')
+                ->references('id')
+                ->on('payment_types');
+            $table->bigInteger('sum');
+            $table->string('currency');
+            $table->foreign('currency')
+                ->references('code')
+                ->on('currencies');
+            $table->string('status');
+            $table->bigInteger('bk_id');
+            $table->foreign('bk_id')
+                ->references('id')
+                ->on('bks');
+            $table->jsonb('histories')->nullable();
             $table->timestamps();
         });
     }

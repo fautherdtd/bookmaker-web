@@ -2,22 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bks;
-use App\Models\Pivot\Bets;
-use App\Models\Pivot\Countries;
+use App\Models\Bks as BkModel;
+use App\Resources\BK\BkItemResources;
+use App\Resources\BK\BksResources;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BkController extends Controller
 {
     /**
+     * @param Request $request
      * @return \Inertia\Response
      */
-    public function index(): \Inertia\Response
+    public function index(Request $request): \Inertia\Response
     {
+        $builder = BkModel::with(['country:id,name', 'bet:id,name']);
         return Inertia::render('Bk', [
-            'countries' => Countries::all(),
-            'statuses' => Bks::STATUSES,
-            'bets' => Bets::all()
+            'data' => new BksResources($builder->get()),
+            'countries' => $this->pivots()->countries(),
+            'statuses' => BkModel::STATUSES,
+            'bets' => $this->pivots()->bets()
         ]);
     }
 
@@ -27,8 +31,26 @@ class BkController extends Controller
      */
     public function show(int $id): \Inertia\Response
     {
-        return Inertia::render('Bk/BkShow', [
-            'id' => 'qweqweqw'
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments'])
+            ->where('id', $id)
+            ->first();
+        return Inertia::render('Bk/Show', [
+            'item' => new BkItemResources($builder)
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @return \Inertia\Response
+     */
+    public function edit(int $id): \Inertia\Response
+    {
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments'])
+            ->where('id', $id)
+            ->first();
+        return Inertia::render('Bk/Edit', [
+            'item' => new BkItemResources($builder),
+            'statuses' => BkModel::STATUSES,
         ]);
     }
 }

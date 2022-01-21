@@ -34,16 +34,32 @@
             </div>
             <hr class="mb-6 mt-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
-                <table-lite
-                    :is-loading="table.isLoading"
-                    :is-re-search="table.isReSearch"
-                    :columns="table.columns"
-                    :rows="table.rows"
-                    :total="table.totalRecordCount"
-                    :sortable="table.sortable"
-                    :messages="table.messages"
-                ></table-lite>
+                <el-table
+                    :data="data['data']"
+                    :default-sort="{ prop: 'drop' }"
+                    style="width: 100%"
+                >
+                    <el-table-column prop="country" sortable label="Страна" />
+                    <el-table-column prop="drop" sortable label="ФИО" />
+                    <el-table-column prop="type" sortable label="Тип платежа" />
+                    <el-table-column prop="cash" sortable label="Сумма" />
+                    <el-table-column prop="status" sortable label="Статус" />
+                    <el-table-column prop="updated_at" sortable label="Дата изменения" />
+                    <el-table-column fixed="right" label="Действия" width="120">
+                        <template #default="scope">
+                            <el-button-group class="ml-4">
+                                <el-button type="primary" :icon="Edit"
+                                           v-on:click="getShowItem(scope.row.id)"></el-button>
+                            </el-button-group>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
+            <PaymentShow
+                v-if="this.showItem !== null"
+                :item="this.showItem"
+                :dialogPaymentVisible="this.dialogPaymentVisible"
+            />
         </div>
     </app-layout>
 </template>
@@ -52,103 +68,36 @@
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
-import TableLite from "vue3-table-lite";
+import { Link } from '@inertiajs/inertia-vue3';
+import PaymentShow from '@/Pages/Payment/Show.vue'
+import {
+    Edit,
+} from '@element-plus/icons-vue'
 
 export default defineComponent({
     components: {
         AppLayout,
         JetSecondaryButton,
-        TableLite
+        Link,
+        PaymentShow
     },
     data: function () {
         return {
-            table: {
-                isLoading: false,
-                isReSearch: false,
-                columns: [
-                    {
-                        label: "ID",
-                        field: "id",
-                        width: "3%",
-                        sortable: true,
-                        isKey: true,
-                    },
-                    {
-                        label: "Страна",
-                        field: "country",
-                        width: "10%",
-                        sortable: true
-                    },
-                    {
-                        label: "ФИО",
-                        field: "name",
-                        width: "15%",
-                        sortable: true
-                    },
-                    {
-                        label: "Тип платежа",
-                        field: "types",
-                        width: "10%",
-                        sortable: true,
-                    },
-                    {
-                        label: "Сумма",
-                        field: "sum",
-                        width: "5%",
-                        sortable: true,
-                    },
-                    {
-                        label: "Статус",
-                        field: "status",
-                        width: "5%",
-                        sortable: true,
-                    },
-                    {
-                        label: "Дата изменения",
-                        field: "updated_at",
-                        width: "13%",
-                        sortable: true,
-                    },
-                    {
-                        label: "Действия",
-                        field: "action",
-                        width: "5%",
-                        display: function (row) {
-                            return (
-                                '<div class="flex justify-center">' +
-                                '<button type="button" data-id="1" class="quick-btn text-lg"><i class="lni lni-pencil-alt"></i></button> ' +
-                                '<button type="button" data-id="1" class="quick-btn text-lg"><i class="lni lni-eye"></i></button>' +
-                                '</div>'
-                            );
-                        },
-                    },
-                ],
-                rows: [
-                    {
-                        id: 1,
-                        country: "Россия",
-                        name: "Смирнов Иван Иванович",
-                        types: "btc",
-                        sum: "24000$",
-                        bk: "Фонбет",
-                        status: "Статус",
-                        updated_at: "18.12.2021",
-                    },
-                ],
-                totalRecordCount: 2,
-                sortable: {
-                    order: "id",
-                    sort: "asc",
-                },
-                messages: {
-                    pagingInfo: "Показывает {0}-{1} из {2}",
-                    pageSizeChangeLabel: "Кол-во:",
-                    gotoPageLabel: "Перейти на стр:",
-                    noDataAvailable: "Нет данных",
-                },
-            }
+            showItem: null,
+            dialogPaymentVisible: false
         }
     },
+    methods: {
+        getShowItem: function (id) {
+            this.showItem = this.data.data.find(obj => {
+                return obj.id === id
+            })
+            this.dialogPaymentVisible = true
+        }
+    },
+    props: {
+        data: Object
+    }
 })
 </script>
 
