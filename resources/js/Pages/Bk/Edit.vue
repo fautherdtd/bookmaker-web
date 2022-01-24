@@ -37,14 +37,17 @@
                         </div>
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="currency" value="Валюта" />
-                            <jet-input id="currency" type="text" class="mt-1 block w-full" v-model="form.currency" />
-                            <jet-input-error :message="form.errors.currency" class="mt-2" />
+                            <jet-input id="currency" type="text" class="mt-1 block w-full"
+                                       :value="item['data']['currencies']" disabled/>
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="status" value="Статус" />
-                            <select name="status" id="status" v-model="form.status">
-                                <option value="user">Сотрудник</option>
-                                <option value="administrator">Администратор</option>
+                            <jet-label for="status" :value="'Статус: ' + form.status.value" />
+                            <select name="status" id="status" v-model="form.status.value">
+                                <option value="{{ form.status.key }}" disabled selected>{{ form.status.value }}</option>
+                                <hr>
+                                <option :value="key" v-for="(value, key) in $page['props']['statuses']">
+                                    {{ value }}
+                                </option>
                             </select>
                             <jet-input-error :message="form.errors.status" class="mt-2" />
                         </div>
@@ -79,6 +82,7 @@ import JetButton from '@/Jetstream/Button.vue'
 import JetInput from '@/Jetstream/Input.vue'
 import JetInputError from '@/Jetstream/InputError.vue'
 import JetLabel from '@/Jetstream/Label.vue'
+import { ElMessage } from 'element-plus'
 
 export default defineComponent({
     components: {
@@ -90,15 +94,16 @@ export default defineComponent({
         JetInput,
         JetInputError,
         JetLabel,
+        ElMessage
     },
     data: function () {
         return {
             form: this.$inertia.form({
+                id: this.item.data.id,
                 email: this.item.data.email,
                 password: this.item.data.password,
                 info: this.item.data.info,
                 sum: this.item.data.sum,
-                currency: this.item.data.currency,
                 status: this.item.data.status,
                 comment: null,
             }),
@@ -106,10 +111,17 @@ export default defineComponent({
     },
     methods: {
         editBk() {
-            this.form.post(route('user.store'), {
+            this.form.put(route('bk.store', this.item.data.id), {
                 errorBag: 'editBk',
-                onSuccess: () => this.form.reset(),
+                onSuccess: () => {
+                    this.form.reset()
+                    ElMessage.error('Сохранено.');
+                },
                 onError: () => {
+                    if(this.form.errors.comment) {
+                        ElMessage.error("Добавьте комментарий.");
+                    }
+
                 }
             })
         },

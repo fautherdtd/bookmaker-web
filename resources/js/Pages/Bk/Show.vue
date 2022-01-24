@@ -48,11 +48,16 @@
                     </div>
                     <div class="content mt-6 mb-6">
                         <h2 class="text-lg font-bold mb-4"><b>ИСТОРИЯ:</b></h2>
+                        <ul>
+                            <li v-for="(value, key) in item['data']['stories']" :key="key">
+                                {{ value }}
+                            </li>
+                        </ul>
                     </div>
                     <div class="bg-gray-50 p-6">
                         <div class="flex justify-between">
                             <p class="font-bold text-lg"><b>Сумма:</b> {{ item['data']['cash'] }}</p>
-                            <p class="font-bold text-lg"><b>Статус: {{ item['data']['status'] }}</b> </p>
+                            <p class="font-bold text-lg"><b>Статус: {{ item['data']['status']['value'] }}</b> </p>
                         </div>
                         <div class="flex justify-between">
                             <p class="font-bold text-lg"><b>Валюта:</b> {{ item['data']['currencies'] }}</p>

@@ -15,6 +15,12 @@ class CreateBkStoriesTable extends Migration
     {
         Schema::create('bk_stories', function (Blueprint $table) {
             $table->id();
+            $table->string('user');
+            $table->bigInteger('bk_id');
+            $table->foreign('bk_id')
+                ->references('id')
+                ->on('bks');
+            $table->string('action');
             $table->timestamps();
         });
     }

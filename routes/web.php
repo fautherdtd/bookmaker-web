@@ -24,6 +24,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\BkController::class, 'index'])->name('index');
         Route::get('/show/{id}', [\App\Http\Controllers\BkController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [\App\Http\Controllers\BkController::class, 'edit'])->name('edit');
+        Route::put('/store/{id}', [\App\Http\Controllers\BkController::class, 'store'])->name('store');
     });
 
     Route::prefix('payment')->name('payment.')->group(function () {

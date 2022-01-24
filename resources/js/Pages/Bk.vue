@@ -26,7 +26,7 @@
                     <select name="dropguide" id="dropguide" class="mr-3 w-48">
                         <option value="0" selected disabled>Дроповод</option>
                     </select>
-                    <select name="status" id="status" class="mr-3 w-48">
+                    <select name="status" id="status" class="mr-3 w-48" @change="filterTable($event, 'status')">
                         <option value="none" selected disabled>Статус</option>
                         <option v-for="(item, key) in $page['props']['statuses']" :value="key">
                             {{ item }}
@@ -54,14 +54,18 @@
                     <el-table-column prop="bk" sortable label="БК" />
                     <el-table-column prop="drop_guide" sortable label="Дроповод" />
                     <el-table-column prop="status" sortable label="Статус" />
-                    <el-table-column fixed="right" label="Действия" width="120">
+                    <el-table-column fixed="right" label="Действия" >
                         <template #default="scope">
                             <el-button-group class="ml-4">
                                 <Link :href="route('bk.show', scope.row.id)">
-                                    <el-button type="primary" :icon="Edit"></el-button>
+                                    <el-button type="primary">
+                                        <i class="lni lni-eye"></i>
+                                    </el-button>
                                 </Link>
-                                <Link :href="route('user.create')">
-                                    <el-button type="primary" :icon="Edit"></el-button>
+                                <Link :href="route('bk.edit', scope.row.id)">
+                                    <el-button type="primary">
+                                        <i class="lni lni-pencil-alt"></i>
+                                    </el-button>
                                 </Link>
                             </el-button-group>
                         </template>
@@ -91,6 +95,16 @@ export default defineComponent({
 
         }
     },
+    methods: {
+        filterTable: function (val, queryKey) {
+            console.log(route().push({
+                path: route().current.name,
+                query: {
+                    a: "b"
+                }
+            }))
+        }
+    }
 })
 </script>
 

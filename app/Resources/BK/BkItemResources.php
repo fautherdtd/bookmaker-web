@@ -2,6 +2,7 @@
 
 namespace App\Resources\BK;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BkItemResources extends JsonResource
@@ -22,10 +23,17 @@ class BkItemResources extends JsonResource
             'bk' => $this->bet->name,
             'payments' => $this->payments(),
 
+            'sum' => $this->sum,
             'cash' => $this->cash,
             'currencies' => $this->currencies->name,
-            'status' => $this->statuses,
+
+            'status' => [
+                'key' => $this->status,
+                'value' => $this->statuses,
+            ],
             'responsible' => $this->responsible ?? 'Не выбран.',
+
+            'stories' => $this->formatStories()
         ];
     }
 
@@ -49,5 +57,21 @@ class BkItemResources extends JsonResource
             ]);
         }
         return $payments;
+    }
+
+    /**
+     * @return array
+     */
+    protected function formatStories(): array
+    {
+        $stories = [];
+        foreach ($this->stories as $story) {
+            array_push($stories, implode(' - ', [
+                $story->created_at->format('d.m.Y H:s'),
+                $story->user,
+                $story->action
+            ]));
+        }
+        return $stories;
     }
 }
