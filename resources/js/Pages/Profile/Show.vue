@@ -50,7 +50,6 @@
 
     export default defineComponent({
         props: ['sessions'],
-
         components: {
             AppLayout,
             DeleteUserForm,

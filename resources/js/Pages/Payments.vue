@@ -13,23 +13,31 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex">
-                    <select name="country" id="country" class="mr-3 w-48">
+                    <select name="country" id="country" class="mr-3 w-48" @change="filterTable($event, 'country_id')">
                         <option value="0" selected disabled>Страна</option>
-                        <option value="1">Россия</option>
+                        <option v-for="country in filter['countries']"  :value="country.id">
+                            {{ country.name }}
+                        </option>
                     </select>
-                    <select name="drop" id="drop" class="mr-3 w-48">
+                    <select name="drop" id="drop" class="mr-3 w-48" @change="filterTable($event, 'drop')">
                         <option value="0" selected disabled>Дроп</option>
-                        <option value="1">Тест</option>
+                        <option v-for="drop in filter['drops']"  :value="drop">
+                            {{ drop }}
+                        </option>
                     </select>
-                    <select name="types" id="types" class="mr-3 w-48">
+                    <select name="types" id="types" class="mr-3 w-48" @change="filterTable($event, 'type_id')">
                         <option value="0" selected disabled>Тип платежки</option>
-                        <option value="1">Тест</option>
+                        <option v-for="type in filter['type']"  :value="type.id">
+                            {{ type.title }}
+                        </option>
                     </select>
-                    <select name="status" id="status" class="mr-3 w-48">
+                    <select name="status" id="status" class="mr-3 w-48" @change="filterTable($event, 'status')">
                         <option value="0" selected disabled>Статус</option>
-                        <option value="1">Тест</option>
+                        <option v-for="(val, key) in filter['status']"  :value="key">
+                            {{ val }}
+                        </option>
                     </select>
-                    <button class="underline">Сбросить фильтры</button>
+                    <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
                 </div>
             </div>
             <hr class="mb-6 mt-6">
@@ -93,10 +101,24 @@ export default defineComponent({
                 return obj.id === id
             })
             this.dialogPaymentVisible = true
+        },
+        filterTable: function (val, queryKey) {
+            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
+            let queryParam = queryKey + '=' + value;
+            window.history.pushState({
+                path: window.location.href
+            }, '', window.location.href + '?' + queryParam);
+        },
+        resetFilterTable: function () {
+            console.log(window.location.href.split("?")[0]);
+            window.history.pushState({
+                path: window.location.href
+            }, '', window.location.href.split("?")[0]);
         }
     },
     props: {
-        data: Object
+        data: Object,
+        filter: Object
     }
 })
 </script>

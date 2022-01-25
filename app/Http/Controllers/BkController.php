@@ -21,14 +21,18 @@ class BkController extends Controller
     public function index(Request $request): \Inertia\Response
     {
         $builder = BkModel::with(['country:id,name', 'bet:id,name']);
-        if ($request->filled($request->query('country'))) {
-            $builder->where('country_id', $request->query('country'));
-        }
+//        if ($request->filled($request->query('country'))) {
+//            $builder->where('country_id', $request->query('country'));
+//        }
         return Inertia::render('Bk', [
             'data' => new BksResources($builder->get()),
-            'countries' => $this->pivots()->countries(),
-            'statuses' => BkModel::STATUSES,
-            'bets' => $this->pivots()->bets()
+            'filter' => [
+                'countries' => $this->pivots()->countries(),
+                'statuses' => BkModel::STATUSES,
+                'bets' => $this->pivots()->bets(),
+                'drops' => $this->pivots()->drops(),
+                'dropGuides' => $this->pivots()->dropGuides(),
+            ]
         ]);
     }
 

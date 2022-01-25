@@ -18,7 +18,13 @@ class PaymentController extends Controller
         $builder = Payments::with(['country', 'type'])
             ->get();
         return Inertia::render('Payments', [
-            'data' => new PaymentsResources($builder)
+            'data' => new PaymentsResources($builder),
+            'filter' => [
+                'countries' => $this->pivots()->countries(),
+                'drops' => $this->pivots()->drops(),
+                'type' => $this->pivots()->typePayments(),
+                'status' => Payments::STATUSES,
+            ]
         ]);
     }
 
