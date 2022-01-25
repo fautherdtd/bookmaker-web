@@ -23,8 +23,8 @@
                       <p><b>Валюта:</b> {{ item['currencies'] }}</p>
                   </div>
                   <div class="content">
-                      <p><b>Статус:</b> {{ item['status'] }}</p>
-                      <p><b>Тип платежки:</b> {{ item['type'] }}</p>
+                      <p><b>Статус:</b> {{ item['status']['value'] }}</p>
+                      <p><b>Тип платежки:</b> {{ item['type']['title'] }}</p>
                   </div>
               </div>
           </span>

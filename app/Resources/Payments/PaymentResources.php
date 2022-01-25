@@ -6,21 +6,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PaymentResources extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
             'country' => $this->country->name,
             'drop' => $this->drop,
             'bet' => $this->bk->bet->name,
-            'type' => $this->type->title,
+            'type' => [
+                'id' => $this->type->id,
+                'title' => $this->type->title,
+            ],
             'cash' => $this->sum . ' ' . $this->currency,
             'sum' => [
-                'sum' => $this->sum,
+                'value' => $this->sum,
                 'currency' => $this->currency
             ],
             'currencies' => $this->currencies->name,
-            'status' => $this->statuses,
+            'status' => [
+                'key' => $this->status,
+                'value' => $this->statuses,
+            ],
             'updated_at' => !is_null($this->updated_at) ?
                 $this->updated_at->format('d.m.Y') :
                 $this->created_at->format('d.m.Y')

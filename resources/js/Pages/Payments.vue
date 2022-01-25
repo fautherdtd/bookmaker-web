@@ -53,11 +53,17 @@
                     <el-table-column prop="cash" sortable label="Сумма" />
                     <el-table-column prop="status" sortable label="Статус" />
                     <el-table-column prop="updated_at" sortable label="Дата изменения" />
-                    <el-table-column fixed="right" label="Действия" width="120">
+                    <el-table-column fixed="right" label="Действия">
                         <template #default="scope">
                             <el-button-group class="ml-4">
-                                <el-button type="primary" :icon="Edit"
-                                           v-on:click="getShowItem(scope.row.id)"></el-button>
+                                <el-button type="primary" v-on:click="getShowItem(scope.row.id)">
+                                    <i class="lni lni-eye"></i>
+                                </el-button>
+                                <Link :href="route('payment.edit', scope.row.id)">
+                                    <el-button type="primary">
+                                        <i class="lni lni-pencil-alt"></i>
+                                    </el-button>
+                                </Link>
                             </el-button-group>
                         </template>
                     </el-table-column>

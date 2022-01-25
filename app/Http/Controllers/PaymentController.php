@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Payments;
 use App\Resources\Payments\PaymentResources;
 use App\Resources\Payments\PaymentsResources;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -39,6 +40,25 @@ class PaymentController extends Controller
             ->first();
         return Inertia::render('Payment/Show', [
             'item' => new PaymentResources($builder)
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @return Response
+     */
+    public function edit(int $id): Response
+    {
+        $builder = Payments::with(['country', 'type', 'bk', 'bk.bet'])
+            ->where('id', $id)
+            ->first();
+        return Inertia::render('Payment/Edit', [
+            'item' => new PaymentResources($builder),
+            'pivot' => [
+                'type' => $this->pivots()->typePayments(),
+                'status' => Payments::STATUSES,
+                'currencies' => $this->pivots()->currencies()
+            ]
         ]);
     }
 }
