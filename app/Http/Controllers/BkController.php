@@ -71,7 +71,7 @@ class BkController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(int $id, Request $request): \Illuminate\Http\JsonResponse
+    public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
     {
         $model = BkModel::find($id);
         Validator::make($request->all(), [

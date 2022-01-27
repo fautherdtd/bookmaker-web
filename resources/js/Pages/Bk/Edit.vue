@@ -111,7 +111,7 @@ export default defineComponent({
     },
     methods: {
         editBk() {
-            this.form.put(route('bk.store', this.item.data.id), {
+            this.form.put(route('bk.update', this.item.data.id), {
                 errorBag: 'editBk',
                 onSuccess: () => {
                     this.form.reset()

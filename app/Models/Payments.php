@@ -16,7 +16,6 @@ class Payments extends Model
         'block' => 'Заблокирован',
         'active' => 'Активен'
     ];
-
     /**
      * @return string
      */

@@ -24,18 +24,23 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\BkController::class, 'index'])->name('index');
         Route::get('/show/{id}', [\App\Http\Controllers\BkController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [\App\Http\Controllers\BkController::class, 'edit'])->name('edit');
-        Route::put('/store/{id}', [\App\Http\Controllers\BkController::class, 'store'])->name('store');
+        Route::put('/update/{id}', [\App\Http\Controllers\BkController::class, 'update'])->name('update');
     });
 
     Route::prefix('payment')->name('payment.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
         Route::get('/show/{id}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [\App\Http\Controllers\PaymentController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [\App\Http\Controllers\PaymentController::class, 'update'])->name('update');
     });
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\UserController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\UserController::class, 'store'])->name('store');
+    });
+
+    Route::prefix('statistics')->name('statistics.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('index');
     });
 });

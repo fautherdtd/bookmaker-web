@@ -31,6 +31,9 @@
                                 <jet-nav-link :href="route('user.index')" :active="route().current('user.*')">
                                     Пользователи
                                 </jet-nav-link>
+                                <jet-nav-link :href="route('statistics.index')" :active="route().current('statistics.*')">
+                                    Статистика
+                                </jet-nav-link>
                             </div>
                         </div>
 

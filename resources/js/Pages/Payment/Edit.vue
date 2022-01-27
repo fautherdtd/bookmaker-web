@@ -1,7 +1,9 @@
 <template>
     <app-layout title="Платежка">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Патежка - {{ item['data']['drop'] }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Патежка -
+                {{ item['data']['country'] }}, {{ item['data']['drop'] }}
+            </h2>
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -87,14 +89,14 @@ export default defineComponent({
             form: this.$inertia.form({
                 type_id: this.item.data.type.id,
                 sum: this.item.data.sum.value,
-                currency: this.item.data.sum.value,
+                currency: this.item.data.sum.currency,
                 status: this.item.data.status.key,
             }),
         }
     },
     methods: {
         editPayment() {
-            this.form.put(route('bk.store', 99999), {
+            this.form.put(route('payment.update', this.item.data.id), {
                 errorBag: 'editPayment',
                 onSuccess: () => {
                     this.form.reset()

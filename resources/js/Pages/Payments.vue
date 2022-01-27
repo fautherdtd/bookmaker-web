@@ -49,9 +49,9 @@
                 >
                     <el-table-column prop="country" sortable label="Страна" />
                     <el-table-column prop="drop" sortable label="ФИО" />
-                    <el-table-column prop="type" sortable label="Тип платежа" />
+                    <el-table-column prop="type.title" sortable label="Тип платежа" />
                     <el-table-column prop="cash" sortable label="Сумма" />
-                    <el-table-column prop="status" sortable label="Статус" />
+                    <el-table-column prop="status.value" sortable label="Статус" />
                     <el-table-column prop="updated_at" sortable label="Дата изменения" />
                     <el-table-column fixed="right" label="Действия">
                         <template #default="scope">

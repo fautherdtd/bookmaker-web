@@ -61,5 +61,22 @@ class PaymentController extends Controller
             ]
         ]);
     }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $model = Payments::whereId( $id)
+                ->update($request->all());
+            return response()->json('Сохранен.');
+        } catch (\Exception $exception) {
+            return response()->json($exception->getMessage(), 500);
+        }
+
+    }
 }
 
