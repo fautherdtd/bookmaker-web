@@ -31,6 +31,6 @@ class StatisticsController extends Controller
         if (!Auth::user()->hasRole('administrator')) {
             return redirect()->route('statistics.index');
         }
-        return redirect()->route('statistics.dashboard');
+//        return redirect()->route('statistics.dashboard');
     }
 }
