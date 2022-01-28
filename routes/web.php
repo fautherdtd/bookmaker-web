@@ -16,9 +16,7 @@ use Inertia\Inertia;
 */
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/', [\App\Http\Controllers\StatisticsController::class, 'handler'])->name('index');
 
     Route::prefix('bk')->name('bk.')->group(function () {
         Route::get('/', [\App\Http\Controllers\BkController::class, 'index'])->name('index');
@@ -42,5 +40,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::prefix('statistics')->name('statistics.')->group(function () {
         Route::get('/', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('index');
+        Route::get('/dashboard', [\App\Http\Controllers\StatisticsController::class, 'dashboard'])->name('dashboard');
     });
 });
