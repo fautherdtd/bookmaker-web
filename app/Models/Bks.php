@@ -19,6 +19,7 @@ class Bks extends Model
         'waiting' => 'Ожидание',
         'on_verification' => 'На верификации',
         'on_withdrawn' => 'На выводе',
+        'in_work' => 'В работе',
         'withdrawn' => 'Выведен',
         'preparing_documents' => 'Готовим документы',
         'waiting_drop' => 'Ожидание дропа',

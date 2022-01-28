@@ -41,8 +41,8 @@
                                        :value="item['data']['currencies']" disabled/>
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="status" :value="'Статус: ' + form.status.value" />
-                            <select name="status" id="status" v-model="form.status.value">
+                            <jet-label for="status" :value="'Статус: ' + this.item.data.status" />
+                            <select name="status" id="status" v-model="form.status">
                                 <option value="{{ form.status.key }}" disabled selected>{{ form.status.value }}</option>
                                 <hr>
                                 <option :value="key" v-for="(value, key) in $page['props']['statuses']">

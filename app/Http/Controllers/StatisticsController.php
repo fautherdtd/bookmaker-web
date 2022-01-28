@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use function Symfony\Component\Translation\t;
 
 class StatisticsController extends Controller
 {
@@ -20,6 +21,7 @@ class StatisticsController extends Controller
      */
     public function dashboard(): \Inertia\Response
     {
+        $this->handler();
         return Inertia::render('Dashboard');
     }
 
@@ -31,6 +33,6 @@ class StatisticsController extends Controller
         if (!Auth::user()->hasRole('administrator')) {
             return redirect()->route('statistics.index');
         }
-//        return redirect()->route('statistics.dashboard');
+        return redirect()->route('statistics.dashboard');
     }
 }
