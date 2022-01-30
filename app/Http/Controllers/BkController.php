@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bks as BkModel;
 use App\Models\Pivot\BkStories;
+use App\Models\User;
 use App\Resources\BK\BkItemResources;
 use App\Resources\BK\BksResources;
 use Illuminate\Http\Request;
@@ -20,10 +21,10 @@ class BkController extends Controller
      */
     public function index(Request $request): \Inertia\Response
     {
-        $builder = BkModel::with(['country:id,name', 'bet:id,name']);
-//        if ($request->filled($request->query('country'))) {
-//            $builder->where('country_id', $request->query('country'));
-//        }
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible']);
+        if (! Auth::user()->hasRole('administrator')) {
+            $builder->where('responsible', Auth::id());
+        }
         return Inertia::render('Bk', [
             'data' => new BksResources($builder->get()),
             'filter' => [
@@ -62,6 +63,11 @@ class BkController extends Controller
         return Inertia::render('Bk/Edit', [
             'item' => new BkItemResources($builder),
             'statuses' => BkModel::STATUSES,
+            'responsible' => User::whereHas(
+                'roles', function($q){
+                $q->where('name', 'user');
+            }
+            )->get()
         ]);
     }
 
@@ -94,17 +100,18 @@ class BkController extends Controller
             $model->sum = $request->input('sum');
             array_push($actions, ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"']);
         }
-        if ($request->input('status.key') != $model->status) {
-            $model->info = $request->input('status.key');
-            array_push($actions, ['Статус изменен с "' . $model->statuses . '" на "' . $request->input('status.value') . '"']);
+        if ($request->input('status') != $model->status) {
+            $model->status = $request->input('status');
+            array_push($actions, ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"']);
         }
         array_push($actions, ['Добавлен комментарий "' . $request->input('comment') . '"']);
 
         if (
-            Auth::user()->hasRole(['Administrator']) &&
+            Auth::user()->hasRole(['administrator']) &&
             $request->input('responsible') != $model->responsible
         ) {
             $model->responsible = $request->input('responsible');
+            array_push($actions, ['Был изменен ответственный.']);
         }
         $model->save();
         if ($stories = $this->storeBkStories($id, $actions)) {

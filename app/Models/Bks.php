@@ -82,4 +82,9 @@ class Bks extends Model
     {
         return $this->hasMany(BkStories::class, 'bk_id', 'id');
     }
+
+    public function userResponsible(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'responsible');
+    }
 }

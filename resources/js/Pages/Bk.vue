@@ -54,12 +54,14 @@
                     :default-sort="{ prop: 'drop' }"
                     style="width: 100%"
                 >
-                    <el-table-column prop="country" sortable label="Страна" />
+                    <el-table-column prop="country" sortable label="Страна" width="100"/>
                     <el-table-column prop="drop" sortable label="ФИО" />
                     <el-table-column prop="cash" sortable label="Сумма" />
                     <el-table-column prop="bk" sortable label="БК" />
                     <el-table-column prop="drop_guide" sortable label="Дроповод" />
-                    <el-table-column prop="status" sortable label="Статус" />
+                    <el-table-column prop="status" sortable label="Статус" width="100" />
+                    <el-table-column prop="userResponsible.name" sortable label="Ответственный"
+                                     v-if="$page.props.permission.isAdmin"/>
                     <el-table-column fixed="right" label="Действия" >
                         <template #default="scope">
                             <el-button-group class="ml-4">

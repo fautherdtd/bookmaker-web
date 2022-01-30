@@ -34,10 +34,13 @@ class HandleInertiaRequests extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function share(Request $request)
+    public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            //
+            'permission' => [
+                'isAdmin' => $request->user() ?
+                    $request->user()->hasRole('administrator') : false,
+            ],
         ]);
     }
 }

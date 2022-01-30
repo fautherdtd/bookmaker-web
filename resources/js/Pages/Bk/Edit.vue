@@ -41,9 +41,9 @@
                                        :value="item['data']['currencies']" disabled/>
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="status" :value="'Статус: ' + this.item.data.status" />
+                            <jet-label for="status" value="Статус" />
                             <select name="status" id="status" v-model="form.status">
-                                <option value="{{ form.status.key }}" disabled selected>{{ form.status.value }}</option>
+                                <option value="{{ form.status }}" disabled selected>{{ item['data']['status']['value'] }}</option>
                                 <hr>
                                 <option :value="key" v-for="(value, key) in $page['props']['statuses']">
                                     {{ value }}
@@ -56,6 +56,16 @@
                             <textarea name="comment" id="comment" v-model="form.comment"
                                       class="border-gray-300 w-full focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"></textarea>
                             <jet-input-error :message="form.errors.comment" class="mt-2" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4" v-if="$page.props.permission.isAdmin">
+                            <jet-label for="responsible" value="Ответственный" />
+                            <select name="responsible" id="responsible" v-model="form.responsible">
+                                <option value="{{ form.responsible }}" disabled selected>{{ form.responsible }}</option>
+                                <hr>
+                                <option :value="user.id" v-for="user in this.responsible">
+                                    {{ user.name }}
+                                </option>
+                            </select>
                         </div>
                     </template>
                     <template #actions>
@@ -104,8 +114,9 @@ export default defineComponent({
                 password: this.item.data.password,
                 info: this.item.data.info,
                 sum: this.item.data.sum,
-                status: this.item.data.status,
+                status: this.item.data.status.key,
                 comment: null,
+                responsible: this.item.data.responsible
             }),
         }
     },
@@ -127,7 +138,8 @@ export default defineComponent({
         },
     },
     props: {
-        item: Object
+        item: Object,
+        responsible: Object
     }
 })
 </script>

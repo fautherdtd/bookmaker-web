@@ -31,7 +31,8 @@ class BkItemResources extends JsonResource
                 'key' => $this->status,
                 'value' => $this->statuses,
             ],
-            'responsible' => $this->responsible ?? 'Не выбран.',
+            'responsible' => $this->responsible,
+            'userResponsible' => $this->user_responsible,
 
             'stories' => $this->formatStories()
         ];
