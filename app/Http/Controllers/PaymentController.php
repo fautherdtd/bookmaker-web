@@ -6,6 +6,7 @@ use App\Models\Payments;
 use App\Resources\Payments\PaymentResources;
 use App\Resources\Payments\PaymentsResources;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,6 +18,9 @@ class PaymentController extends Controller
     public function index(): Response
     {
         $builder = Payments::with(['country', 'type'])
+            ->whereHas('bk', function($query){
+                $query->where('responsible', Auth::id());
+            })
             ->get();
         return Inertia::render('Payments', [
             'data' => new PaymentsResources($builder),
