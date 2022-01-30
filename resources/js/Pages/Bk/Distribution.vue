@@ -3,14 +3,8 @@
         <template #header>
             <div class="flex justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    БК
+                    Распределение дропов
                 </h2>
-
-                <Link :href="route('bk.distribution')">
-                    <el-button type="warning">
-                        БК на распределение - {{ payload['distributions'] }}
-                    </el-button>
-                </Link>
             </div>
         </template>
         <div class="py-12">
@@ -40,20 +34,8 @@
                             {{ guide }}
                         </option>
                     </select>
-                    <select name="status" id="status" class="mr-3 w-48" @change="filterTable($event, 'status')">
-                        <option value="none" selected disabled>Статус</option>
-                        <option v-for="(item, key) in filter['statuses']" :value="key">
-                            {{ item }}
-                        </option>
-                    </select>
                     <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
                 </div>
-            </div>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6">
-                <label for="disable-bk">
-                    <input type="checkbox" id="disable-bk" @change="filterTable($event, 'withdrawn_bk')">
-                    Не отображать выведенный бк
-                </label>
             </div>
             <hr>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -62,26 +44,26 @@
                     :default-sort="{ prop: 'drop' }"
                     style="width: 100%"
                 >
-                    <el-table-column prop="country" sortable label="Страна" />
-                    <el-table-column prop="drop" sortable label="ФИО" />
-                    <el-table-column prop="cash" sortable label="Сумма" />
-                    <el-table-column prop="bk" sortable label="БК" />
-                    <el-table-column prop="drop_guide" sortable label="Дроповод" />
-                    <el-table-column prop="status" sortable label="Статус" />
-                    <el-table-column fixed="right" label="Действия" >
+                    <el-table-column prop="country" sortable label="Страна"/>
+                    <el-table-column prop="drop" sortable label="ФИО"/>
+                    <el-table-column prop="cash" sortable label="Сумма"/>
+                    <el-table-column prop="bk" sortable label="БК"/>
+                    <el-table-column prop="drop_guide" sortable label="Дроповод"/>
+                    <el-table-column prop="status" sortable label="Статус"/>
+                    <el-table-column label="Ответственный" fixed="right" width="230">
                         <template #default="scope">
-                            <el-button-group class="ml-4">
-                                <Link :href="route('bk.show', scope.row.id)">
-                                    <el-button type="primary">
-                                        <i class="lni lni-eye"></i>
-                                    </el-button>
-                                </Link>
-                                <Link :href="route('bk.edit', scope.row.id)">
-                                    <el-button type="primary">
-                                        <i class="lni lni-pencil-alt"></i>
-                                    </el-button>
-                                </Link>
-                            </el-button-group>
+                            <select name="responsibleID" id="responsibleID" class="mr-2"
+                                v-on:change="changeSaveDistribution($event)">
+                                <option value="null" disabled selected>Не выбран</option>
+                                <hr>
+                                <option :value="user.id" v-for="user in filter['responsible']">
+                                    {{ user.name }}
+                                </option>
+                            </select>
+                            <el-button circle type="success"
+                                       v-on:click="saveDistribution(this.responsibleID, scope.row.id)">
+                                <i class="lni lni-checkmark"></i>
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -91,13 +73,14 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import {defineComponent, reactive} from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import {
     Edit,
 } from '@element-plus/icons-vue'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
+import {ElMessage} from "element-plus";
 
 export default defineComponent({
     components: {
@@ -108,6 +91,7 @@ export default defineComponent({
     },
     data: function () {
         return {
+            responsibleID: null
         }
     },
     methods: {
@@ -123,19 +107,35 @@ export default defineComponent({
             window.history.pushState({
                 path: window.location.href
             }, '', window.location.href.split("?")[0]);
+        },
+        changeSaveDistribution: function (event) {
+            this.responsibleID = event.target.value
+        },
+        saveDistribution: function (responsible, rowID) {
+            if (responsible == null) {
+                ElMessage.error("Выберите ответственного.")
+                return
+            }
+            axios.put(route('bk.distributionSave'),
+                {
+                    responsible: responsible,
+                    id: rowID
+                }
+            ).then(r => ElMessage.success("Ответственный добавлен."))
+            .catch(r => ElMessage.error("Произошла ошибка, попробуйте еще раз."))
         }
     },
 
     props: {
         data: Object,
         filter: Object,
-        payload: Object,
+        responsible: Object
     }
 })
 </script>
 
 <style scoped>
-    :root {
-        --el-color-primary: #409eff;
-    }
+:root {
+    --el-color-primary: #409eff;
+}
 </style>

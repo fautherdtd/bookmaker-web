@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Models\User;
+use App\Resources\User\UsersResources;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +21,7 @@ class UserController extends Controller
     {
         $builder = User::all();
         return Inertia::render('Users', [
-            'data' => $builder
+            'data' => new UsersResources($builder)
         ]);
     }
 

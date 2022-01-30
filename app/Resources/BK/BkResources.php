@@ -16,7 +16,6 @@ class BkResources extends JsonResource
             'bk' => $this->bet->name,
             'drop_guide' => $this->drop_guide,
             'status' => $this->statuses,
-            'userResponsible' => $this->userResponsible ?? ['name' => 'Не выбран'],
         ];
     }
 }

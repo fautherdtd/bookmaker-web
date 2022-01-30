@@ -16,6 +16,7 @@ class Bks extends Model
     use HasFactory;
 
     const STATUSES = [
+        'new' => 'Новый',
         'waiting' => 'Ожидание',
         'on_verification' => 'На верификации',
         'on_withdrawn' => 'На выводе',

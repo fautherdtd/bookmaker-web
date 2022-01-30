@@ -20,6 +20,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::prefix('bk')->name('bk.')->group(function () {
         Route::get('/', [\App\Http\Controllers\BkController::class, 'index'])->name('index');
+        Route::middleware('role:administrator')
+            ->get('/distribution', [\App\Http\Controllers\BkController::class, 'distribution'])->name('distribution');
+        Route::middleware('role:administrator')
+            ->put('/distribution-save', [\App\Http\Controllers\BkController::class, 'distributionSave'])->name('distributionSave');
         Route::get('/show/{id}', [\App\Http\Controllers\BkController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [\App\Http\Controllers\BkController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [\App\Http\Controllers\BkController::class, 'update'])->name('update');

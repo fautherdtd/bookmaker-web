@@ -21,10 +21,8 @@ class BkController extends Controller
      */
     public function index(Request $request): \Inertia\Response
     {
-        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible']);
-        if (! Auth::user()->hasRole('administrator')) {
-            $builder->where('responsible', Auth::id());
-        }
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible'])
+            ->where('responsible', Auth::id());
         return Inertia::render('Bk', [
             'data' => new BksResources($builder->get()),
             'filter' => [
@@ -33,8 +31,49 @@ class BkController extends Controller
                 'bets' => $this->pivots()->bets(),
                 'drops' => $this->pivots()->drops(),
                 'dropGuides' => $this->pivots()->dropGuides(),
+            ],
+            'payload' => [
+                'distributions' => BkModel::where('responsible', null)->get()->count('id')
             ]
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function distribution(): \Inertia\Response
+    {
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible'])
+            ->where('status', 'new');
+        return Inertia::render('Bk/Distribution', [
+            'data' => new BksResources($builder->get()),
+            'filter' => [
+                'countries' => $this->pivots()->countries(),
+                'bets' => $this->pivots()->bets(),
+                'drops' => $this->pivots()->drops(),
+                'dropGuides' => $this->pivots()->dropGuides(),
+                'responsible' => User::all()
+            ]
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $model = BkModel::where('id', (int) $request->input('id'))
+                ->update([
+                    'responsible' => (int) $request->input('responsible'),
+                    'status' => 'waiting'
+                ]);
+            return response()->json('Изменено.');
+        } catch (\Exception $exception) {
+            return response()->json($exception->getMessage(), 500);
+        }
     }
 
     /**

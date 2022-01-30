@@ -29,7 +29,7 @@ class CreateBksTable extends Migration
             $table->foreign('currency')
                 ->references('code')
                 ->on('currencies');
-            $table->string('status')->default('waiting');
+            $table->string('status')->default('new');
             $table->bigInteger('responsible')->nullable();
             $table->foreign('responsible')
                 ->references('id')

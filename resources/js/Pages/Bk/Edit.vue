@@ -132,7 +132,6 @@ export default defineComponent({
                     if(this.form.errors.comment) {
                         ElMessage.error("Добавьте комментарий.");
                     }
-
                 }
             })
         },
