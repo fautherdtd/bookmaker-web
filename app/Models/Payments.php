@@ -16,6 +16,17 @@ class Payments extends Model
         'block' => 'Заблокирован',
         'active' => 'Активен'
     ];
+
+    protected $fillable = [
+        'type_id',
+        'sum',
+        'currency',
+        'status',
+        'bk_id',
+        'country_id',
+        'drop'
+    ];
+
     /**
      * @return string
      */

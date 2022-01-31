@@ -5,9 +5,9 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Платежки
                 </h2>
-                <jet-secondary-button class="bg-green-100">
-                    Добавить
-                </jet-secondary-button>
+                <Link :href="route('payment.create')">
+                    <el-button type="primary">Создать</el-button>
+                </Link>
             </div>
         </template>
         <div class="py-12">

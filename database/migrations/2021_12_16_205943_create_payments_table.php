@@ -15,8 +15,11 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('country_id');
-            $table->string('drop');
+            $table->bigInteger('country_id')->nullable();
+            $table->foreign('country_id')
+                ->references('id')
+                ->on('countries');
+            $table->string('drop')->nullable(true);
             $table->bigInteger('type_id');
             $table->foreign('type_id')
                 ->references('id')
@@ -27,7 +30,7 @@ class CreatePaymentsTable extends Migration
                 ->references('code')
                 ->on('currencies');
             $table->string('status');
-            $table->bigInteger('bk_id');
+            $table->bigInteger('bk_id')->nullable();
             $table->foreign('bk_id')
                 ->references('id')
                 ->on('bks');

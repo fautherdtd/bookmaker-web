@@ -116,13 +116,11 @@ export default defineComponent({
                 ElMessage.error("Выберите ответственного.")
                 return
             }
-            axios.put(route('bk.distributionSave'),
-                {
-                    responsible: responsible,
-                    id: rowID
-                }
-            ).then(r => ElMessage.success("Ответственный добавлен."))
-            .catch(r => ElMessage.error("Произошла ошибка, попробуйте еще раз."))
+            axios.put(route('bk.distributionSave'), {responsible: responsible, id: rowID})
+                .then(r => {
+                    ElMessage.success("Ответственный добавлен.");
+                })
+                .catch(r => ElMessage.error("Произошла ошибка, попробуйте еще раз."))
         }
     },
 
