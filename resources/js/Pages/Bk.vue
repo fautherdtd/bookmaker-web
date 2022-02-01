@@ -18,36 +18,38 @@
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Страна"
+                        @option:selected="filterTable($event, 'country_id')"
+                        name="country_id"
                         :options="countriesSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Дроп"
-                        @change="filterTable($event, 'drop')"
+                        @option:selected="filterTable($event, 'drop')"
                         :options="dropsSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="БК"
-                        @change="filterTable($event, 'bet_id')"
+                        @option:selected="filterTable($event, 'bet_id')"
                         :options="betsSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Дроповод"
-                        @change="filterTable($event, 'drop_guide')"
+                        @option:selected="filterTable($event, 'drop_guide')"
                         :options="dropGuidesSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Статус"
-                        @change="filterTable($event, 'status')"
+                        @option:selected="filterTable($event, 'status')"
                         :options="statusesSelect">
                     </v-select>
                     <v-select
                         class="w-48 bg-white"
                         placeholder="Ответственный"
-                        @change="filterTable($event, 'responsible')"
+                        @option:selected="filterTable($event, 'responsible')"
                         :options="responsibleSelect">
                     </v-select>
                 </div>
@@ -138,22 +140,27 @@ export default defineComponent({
         }
     },
     methods: {
-        setSelected: function (value)
-        {
-            console.log(value)
-        },
         filterTable: function (val, queryKey) {
-            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
+            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.code;
             let queryParam = queryKey + '=' + value;
             window.history.pushState({
                 path: window.location.href
             }, '', window.location.href + '?' + queryParam);
+            this.updateFilterTable()
+        },
+        updateFilterTable: function() {
+            let params = location.search
+                .slice(1)
+                .split('&')
+                .map(p => p.split('='))
+                .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+            this.$inertia.get(route('bk.index'), params, { replace: true, preserveState: true })
         },
         resetFilterTable: function () {
-            console.log(window.location.href.split("?")[0]);
             window.history.pushState({
                 path: window.location.href
             }, '', window.location.href.split("?")[0]);
+            this.$inertia.get(route('bk.index'))
         }
     },
     props: {

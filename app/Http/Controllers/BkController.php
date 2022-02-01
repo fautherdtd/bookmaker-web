@@ -22,6 +22,15 @@ class BkController extends Controller
     {
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible:id,name'])
             ->where('responsible', Auth::id());
+        if($request->has('withdrawn_bk')) {
+            $builder->where('status', 'withdrawn_bk');
+        }
+        foreach ($request->all() as $key => $value) {
+            if ($request->has($key)) {
+                $builder->where($key, $value);
+            }
+        }
+
         return Inertia::render('Bk', [
             'data' => new BksResources($builder->get()),
             'pivot' => [

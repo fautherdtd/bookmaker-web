@@ -99,10 +99,9 @@ export const Bets = {
 export const DropGuides = {
     computed: {
         dropGuidesSelect: function () {
-            let dropGuide = this.pivot.dropGuides
-            return Object.keys(dropGuide).map(function(value, key) {
+            return this.pivot.dropGuides.map(function(value, key) {
                 return {
-                    code: value,
+                    code: key,
                     label: value
                 }
             })
@@ -145,3 +144,32 @@ export const Responsible = {
         pivot: Object
     }
 }
+//
+// export const Common = {
+//     method: {
+//         filterTable: function (val, queryKey) {
+//             let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
+//             let queryParam = queryKey + '=' + value;
+//             window.history.pushState({
+//                 path: window.location.href
+//             }, '', window.location.href + '?' + queryParam);
+//             this.updateFilterTable()
+//         },
+//         updateFilterTable: function() {
+//             let params = location.search
+//                 .slice(1)
+//                 .split('&')
+//                 .map(p => p.split('='))
+//                 .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+//             console.log(params)
+//             this.$inertia.get(route('bk.index'), params, { replace: true, preserveState: true })
+//         },
+//         resetFilterTable: function () {
+//             console.log(window.location.href.split("?")[0]);
+//             window.history.pushState({
+//                 path: window.location.href
+//             }, '', window.location.href.split("?")[0]);
+//             this.$inertia.get(route('bk.index'))
+//         }
+//     }
+// }
