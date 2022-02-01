@@ -62,7 +62,7 @@
                             <li>- Вывели шт.БК</li>
                             <li>- Сумма</li>
                         </ul>
-                        <el-table :data="this.data" width="70%">
+                        <el-table :data="this.data" width="70%" border>
                             <el-table-column prop="date" label="Всего" width="180" />
                         </el-table>
                     </div>
