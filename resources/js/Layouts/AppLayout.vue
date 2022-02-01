@@ -30,6 +30,9 @@
                                 <jet-nav-link :href="route('bk.index')" :active="route().current('bk.*')">
                                     БК
                                 </jet-nav-link>
+                                <jet-nav-link :href="route('user.index')" :active="route().current('bk.*')">
+                                    Пользователи
+                                </jet-nav-link>
                                 <jet-nav-link :href="route('payment.index')" :active="route().current('payment.*')">
                                     Платежка
                                 </jet-nav-link>
