@@ -18,9 +18,9 @@ class Bks extends Model
     const STATUSES = [
         'new' => 'Новый',
         'waiting' => 'Ожидание',
+        'in_work' => 'В работе',
         'on_verification' => 'На верификации',
         'on_withdrawn' => 'На выводе',
-        'in_work' => 'В работе',
         'withdrawn' => 'Выведен',
         'preparing_documents' => 'Готовим документы',
         'waiting_drop' => 'Ожидание дропа',
@@ -84,6 +84,9 @@ class Bks extends Model
         return $this->hasMany(BkStories::class, 'bk_id', 'id');
     }
 
+    /**
+     * @return HasOne
+     */
     public function userResponsible(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'responsible');

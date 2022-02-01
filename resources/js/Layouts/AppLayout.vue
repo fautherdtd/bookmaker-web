@@ -19,20 +19,19 @@
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('statistics.dashboard')" :active="route().current('statistics.dashboard')">
+                                <jet-nav-link :href="route('statistics.dashboard')"
+                                              :active="route().current('statistics.dashboard')"
+                                              v-if="$page.props.permission.isAdmin">
                                     Дашбоард
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('statistics.index')" :active="route().current('statistics.index')">
+                                    Статистика
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('bk.index')" :active="route().current('bk.*')">
                                     БК
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('payment.index')" :active="route().current('payment.*')">
                                     Платежка
-                                </jet-nav-link>
-                                <jet-nav-link :href="route('user.index')" :active="route().current('user.*')">
-                                    Пользователи
-                                </jet-nav-link>
-                                <jet-nav-link :href="route('statistics.index')" :active="route().current('statistics.index')">
-                                    Статистика
                                 </jet-nav-link>
                             </div>
                         </div>

@@ -63,3 +63,85 @@ export const Statuses = {
         pivot: Object
     }
 }
+
+export const Countries = {
+    computed: {
+        countriesSelect: function () {
+            return this.pivot.countries.map(function(item) {
+                return {
+                    code: item.id,
+                    label: item.name
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+}
+
+export const Bets = {
+    computed: {
+        betsSelect: function () {
+            return this.pivot.bets.map(function(item) {
+                return {
+                    code: item.id,
+                    label: item.name
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+}
+
+export const DropGuides = {
+    computed: {
+        dropGuidesSelect: function () {
+            let dropGuide = this.pivot.dropGuides
+            return Object.keys(dropGuide).map(function(value, key) {
+                return {
+                    code: value,
+                    label: value
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+}
+
+export const Drops = {
+    computed: {
+        dropsSelect: function () {
+            let drops = this.pivot.drops
+            return Object.keys(drops).map(function(item) {
+                return {
+                    code: item,
+                    label: item
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+}
+
+export const Responsible = {
+    computed: {
+        responsibleSelect: function () {
+            return this.pivot.responsible.map(function(item) {
+                return {
+                    code: item.id,
+                    label: item.name
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+}

@@ -9,9 +9,8 @@ use App\Resources\BK\BkItemResources;
 use App\Resources\BK\BksResources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
-use Laravel\Jetstream\Jetstream;
+use App\Http\Controllers\StatisticsController;
 
 class BkController extends Controller
 {
@@ -21,15 +20,16 @@ class BkController extends Controller
      */
     public function index(Request $request): \Inertia\Response
     {
-        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible'])
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible:id,name'])
             ->where('responsible', Auth::id());
         return Inertia::render('Bk', [
             'data' => new BksResources($builder->get()),
-            'filter' => [
+            'pivot' => [
                 'countries' => $this->pivots()->countries(),
-                'statuses' => BkModel::STATUSES,
+                'status' => BkModel::STATUSES,
                 'bets' => $this->pivots()->bets(),
                 'drops' => $this->pivots()->drops(),
+                'responsible' => $this->pivots()->responsible(),
                 'dropGuides' => $this->pivots()->dropGuides(),
             ],
             'payload' => [
@@ -65,11 +65,12 @@ class BkController extends Controller
     public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $model = BkModel::where('id', (int) $request->input('id'))
+            BkModel::where('id', (int) $request->input('id'))
                 ->update([
                     'responsible' => (int) $request->input('responsible'),
                     'status' => 'waiting'
                 ]);
+            (new StatisticsController())->create($request->input('id'));
             return response()->json('Изменено.');
         } catch (\Exception $exception) {
             return response()->json($exception->getMessage(), 500);
@@ -102,11 +103,7 @@ class BkController extends Controller
         return Inertia::render('Bk/Edit', [
             'item' => new BkItemResources($builder),
             'statuses' => BkModel::STATUSES,
-            'responsible' => User::whereHas(
-                'roles', function($q){
-                $q->where('name', 'user');
-            }
-            )->get()
+            'responsible' => User::all()
         ]);
     }
 
@@ -119,9 +116,6 @@ class BkController extends Controller
     public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
     {
         $model = BkModel::find($id);
-        Validator::make($request->all(), [
-            'comment' => ['required', 'string'],
-        ])->validate();
         $actions = [];
         if ($request->input('email') != $model->email) {
             $model->email = $request->input('email');
@@ -143,8 +137,9 @@ class BkController extends Controller
             $model->status = $request->input('status');
             array_push($actions, ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"']);
         }
-        array_push($actions, ['Добавлен комментарий "' . $request->input('comment') . '"']);
-
+        if ($request->filled('comment')) {
+            array_push($actions, ['Добавлен комментарий "' . $request->input('comment') . '"']);
+        }
         if (
             Auth::user()->hasRole(['administrator']) &&
             $request->input('responsible') != $model->responsible

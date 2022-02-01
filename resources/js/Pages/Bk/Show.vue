@@ -61,7 +61,7 @@
                         </div>
                         <div class="flex justify-between">
                             <p class="font-bold text-lg"><b>Валюта:</b> {{ item['data']['currencies'] }}</p>
-                            <p class="font-bold text-lg"><b>Ответственный:</b> {{ item['data']['responsible'] }}</p>
+                            <p class="font-bold text-lg"><b>Ответственный:</b> {{ item['data']['responsible']['name'] }}</p>
                         </div>
                         <div class="text-center mt-5">
                             <Link :href="route('bk.edit', item['data']['id'])">

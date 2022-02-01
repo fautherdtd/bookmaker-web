@@ -5,8 +5,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     БК
                 </h2>
-
-                <Link :href="route('bk.distribution')">
+                <Link :href="route('bk.distribution')" v-if="$page.props.permission.isAdmin">
                     <el-button type="warning">
                         БК на распределение - {{ payload['distributions'] }}
                     </el-button>
@@ -16,44 +15,49 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex">
-                    <select name="country" id="country" class="mr-3 w-48" @change="filterTable($event, 'country_id')">
-                        <option value="0" selected disabled>Страна</option>
-                        <option v-for="country in filter['countries']"  :value="country.id">
-                            {{ country.name }}
-                        </option>
-                    </select>
-                    <select name="drop" id="drop" class="mr-3 w-48" @change="filterTable($event, 'drop')">
-                        <option value="0" selected disabled>Дроп</option>
-                        <option v-for="drop in filter['drops']"  :value="drop">
-                            {{ drop }}
-                        </option>
-                    </select>
-                    <select name="bk" id="bk" class="mr-3" @change="filterTable($event, 'bk_id')">
-                        <option value="none" selected disabled>БК</option>
-                        <option v-for="bet in filter['bets']" :value="bet.id">
-                            {{ bet.name }}
-                        </option>
-                    </select>
-                    <select name="dropguide" id="dropguide" class="mr-3 w-48" @change="filterTable($event, 'drop_guide')">
-                        <option value="0" selected disabled>Дроповод</option>
-                        <option v-for="guide in filter['dropGuides']" :value="guide">
-                            {{ guide }}
-                        </option>
-                    </select>
-                    <select name="status" id="status" class="mr-3 w-48" @change="filterTable($event, 'status')">
-                        <option value="none" selected disabled>Статус</option>
-                        <option v-for="(item, key) in filter['statuses']" :value="key">
-                            {{ item }}
-                        </option>
-                    </select>
-                    <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Страна"
+                        :options="countriesSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Дроп"
+                        @change="filterTable($event, 'drop')"
+                        :options="dropsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="БК"
+                        @change="filterTable($event, 'bet_id')"
+                        :options="betsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Дроповод"
+                        @change="filterTable($event, 'drop_guide')"
+                        :options="dropGuidesSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Статус"
+                        @change="filterTable($event, 'status')"
+                        :options="statusesSelect">
+                    </v-select>
+                    <v-select
+                        class="w-48 bg-white"
+                        placeholder="Ответственный"
+                        @change="filterTable($event, 'responsible')"
+                        :options="responsibleSelect">
+                    </v-select>
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6 flex justify-between">
                 <label for="disable-bk">
                     <input type="checkbox" id="disable-bk" @change="filterTable($event, 'withdrawn_bk')">
                     Не отображать выведенный бк
                 </label>
+                <button class="underline ml-3" @click="resetFilterTable">Сбросить фильтры</button>
             </div>
             <hr>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -65,9 +69,12 @@
                     <el-table-column prop="country" sortable label="Страна" />
                     <el-table-column prop="drop" sortable label="ФИО" />
                     <el-table-column prop="cash" sortable label="Сумма" />
-                    <el-table-column prop="bk" sortable label="БК" />
+                    <el-table-column prop="bk" sortable label="БК" width="100"/>
                     <el-table-column prop="drop_guide" sortable label="Дроповод" />
-                    <el-table-column prop="status" sortable label="Статус" />
+                    <el-table-column prop="status" sortable label="Статус" width="100"/>
+                    <el-table-column prop="responsible.name"
+                                     v-if="$page.props.permission.isAdmin"
+                                     sortable label="Ответственный" />
                     <el-table-column fixed="right" label="Действия" >
                         <template #default="scope">
                             <el-button-group class="ml-4">
@@ -94,23 +101,47 @@
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
-import {
-    Edit,
-} from '@element-plus/icons-vue'
+import vSelect from 'vue-select'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
+import {
+    Bets,
+    BkList,
+    Countries,
+    Currencies,
+    DropGuides, Responsible,
+    Statuses,
+    TypePayments
+} from '../Mixins/Filters'
 
 export default defineComponent({
     components: {
         AppLayout,
         Link,
-        Edit,
-        JetSecondaryButton
+        JetSecondaryButton,
+        vSelect
     },
+    mixins: [
+        Currencies,
+        Statuses,
+        BkList,
+        TypePayments,
+        DropGuides,
+        Bets,
+        Countries,
+        Responsible
+    ],
     data: function () {
         return {
+            filter: {
+                country_id: 0
+            }
         }
     },
     methods: {
+        setSelected: function (value)
+        {
+            console.log(value)
+        },
         filterTable: function (val, queryKey) {
             let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
             let queryParam = queryKey + '=' + value;
@@ -125,17 +156,10 @@ export default defineComponent({
             }, '', window.location.href.split("?")[0]);
         }
     },
-
     props: {
         data: Object,
-        filter: Object,
+        pivot: Object,
         payload: Object,
     }
 })
 </script>
-
-<style scoped>
-    :root {
-        --el-color-primary: #409eff;
-    }
-</style>

@@ -17,7 +17,7 @@ class ImportData extends Command
      *
      * @var string
      */
-    protected $signature = 'import:data';
+    protected $signature = 'data:import';
 
     /**
      * The console command description.

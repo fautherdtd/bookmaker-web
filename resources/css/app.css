@@ -1,3 +1,9 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.vs__dropdown-toggle {
+    border: 1px solid #6b7280;
+    background-color: #fff;
+    border-radius: 0px;
+}

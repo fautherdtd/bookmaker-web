@@ -11,15 +11,19 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8  bg-white">
                 <div class="py-12">
                     <div class="flex">
-                        <button class="underline font-bold mr-2">На сегодня</button>
-                        <button class="underline mr-2">За прошлый месяц</button>
-                        <select name="country" id="country" class="mr-3 w-48">
-                            <option value="0" selected disabled>{{ this.currentMonth }}</option>
-                            <hr>
-                            <option v-for="month in months"  :value="month">
-                                {{month }}
+                        <select name="country" id="country" class="mr-3 w-48" v-model="this.formQuery.month">
+                            <option v-for="(value, key) in months"  :value="key">
+                                {{ value }}
                             </option>`
                         </select>
+                        <select name="year" id="year" class="mr-3 w-48" v-model="this.formQuery.year">
+                            <option v-for="year in years"  :value="year">
+                                {{ year }}
+                            </option>`
+                        </select>
+                    </div>
+                    <div class="underline font-semibold text-xl mt-2">
+                        <h2>Статистика на {{ this.months[this.formQuery.month] }} {{ this.formQuery.year }}</h2>
                     </div>
                     <div class="mt-2">
                         <ul>
@@ -48,13 +52,31 @@ export default defineComponent({
     },
     data: function () {
         return {
-            currentMonth: new Date().toLocaleString('ru', {
-                month: 'long'
-            }),
-            months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Ноябрь', 'Декабрь']
+            months: {
+                0: 'Январь',
+                1: 'Февраль',
+                2: 'Март',
+                3: 'Апрель',
+                4: 'Май',
+                5: 'Июнь',
+                6: 'Июль',
+                7: 'Август',
+                8: 'Сентябрь',
+                9: 'Октябрь',
+                10: 'Ноябрь',
+                11: 'Декабрь'
+            },
+            years: [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030],
+            formQuery: {
+                month: new Date().getMonth(),
+                year: new Date().getFullYear()
+            }
         }
     },
     computed: {
+    },
+    props: {
+        data: Object
     }
 })
 </script>

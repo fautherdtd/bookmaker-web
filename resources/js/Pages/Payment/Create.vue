@@ -68,7 +68,7 @@ import JetInputError from '@/Jetstream/InputError.vue'
 import JetLabel from '@/Jetstream/Label.vue'
 import {ElMessage} from "element-plus";
 import vSelect from 'vue-select'
-import {BkList, Currencies, Statuses, TypePayments} from '../../Mixins/Filters'
+import {BkList, Currencies, Statuses, Countries} from '../../Mixins/Filters'
 
 export default defineComponent({
     components: {
@@ -85,7 +85,8 @@ export default defineComponent({
         Currencies,
         Statuses,
         BkList,
-        TypePayments
+        Countries,
+
     ],
     data: function () {
         return {

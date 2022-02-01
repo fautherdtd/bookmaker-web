@@ -27,6 +27,7 @@ class PaymentResources extends JsonResource
                 'key' => $this->status,
                 'value' => $this->statuses,
             ],
+            'bk_id' => $this->bk_id,
             'updated_at' => !is_null($this->updated_at) ?
                 $this->updated_at->format('d.m.Y') :
                 $this->created_at->format('d.m.Y')

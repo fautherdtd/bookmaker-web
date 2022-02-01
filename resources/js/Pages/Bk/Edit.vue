@@ -9,7 +9,7 @@
                     <template #title>Редактирование БК</template>
                     <template #description>
                         <h2 class="text-lg font-bold mb-4"><b>ОБЩАЯ ИНФОРМАЦИЯ:</b></h2>
-                        <p><b>Страна:</b> {{ item['data']['country']['name'] }}</p>
+                        <p><b>Страна:</b> {{ item['data']['country'] }}</p>
                         <p><b>ФИО:</b> {{ item['data']['drop'] }}</p>
                         <p><b>Дроповод:</b> {{ item['data']['drop_guide'] }}</p>
                         <p><b>БК:</b>  {{ item['data']['bk'] }}</p>
@@ -43,8 +43,6 @@
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="status" value="Статус" />
                             <select name="status" id="status" v-model="form.status">
-                                <option value="{{ form.status }}" disabled selected>{{ item['data']['status']['value'] }}</option>
-                                <hr>
                                 <option :value="key" v-for="(value, key) in $page['props']['statuses']">
                                     {{ value }}
                                 </option>
@@ -59,9 +57,8 @@
                         </div>
                         <div class="col-span-6 sm:col-span-4" v-if="$page.props.permission.isAdmin">
                             <jet-label for="responsible" value="Ответственный" />
-                            <select name="responsible" id="responsible" v-model="form.responsible">
-                                <option value="{{ form.responsible }}" disabled selected>{{ form.responsible }}</option>
-                                <hr>
+                            <select name="responsible" id="responsible" class="w-48"
+                                    v-model="form.responsible">
                                 <option :value="user.id" v-for="user in this.responsible">
                                     {{ user.name }}
                                 </option>
@@ -116,7 +113,7 @@ export default defineComponent({
                 sum: this.item.data.sum,
                 status: this.item.data.status.key,
                 comment: null,
-                responsible: this.item.data.responsible
+                responsible: this.item.data.responsible.id
             }),
         }
     },

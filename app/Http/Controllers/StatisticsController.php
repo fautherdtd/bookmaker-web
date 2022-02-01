@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bks;
+use App\Models\Statistics as StatisticsModel;
+use App\Resources\Statistics\StatisticsResources;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use function Symfony\Component\Translation\t;
 
 class StatisticsController extends Controller
 {
@@ -13,7 +16,19 @@ class StatisticsController extends Controller
      */
     public function index(): \Inertia\Response
     {
-        return Inertia::render('Statistics');
+        $builder = StatisticsModel::where('responsible', Auth::id())
+            ->get();
+        $statusCount = Bks::where('responsible', Auth::id())
+                ->groupBy('status')
+                ->select('status', DB::raw('count(*) as total'))
+                ->get();
+        $resources = $builder->merge($statusCount);
+        return Inertia::render('Statistics', [
+            'data' => [
+//                'statistics' => new StatisticsResources($resources),
+//                'count' => $statusCount
+            ]
+        ]);
     }
 
     /**
@@ -21,18 +36,15 @@ class StatisticsController extends Controller
      */
     public function dashboard(): \Inertia\Response
     {
-        $this->handler();
         return Inertia::render('Dashboard');
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     *
      */
-    public function handler()
+    public function create(int $bkID)
     {
-        if (!Auth::user()->hasRole('administrator')) {
-            return redirect()->route('statistics.index');
-        }
-        return redirect()->route('statistics.dashboard');
+        $bk = Bks::find($bkID);
+        $model = new StatisticsModel();
     }
 }

@@ -11,8 +11,14 @@
             </div>
             <div class="w-full">
                 <h3 class="font-bold text-lg">Связанные данные:</h3>
-                <p><b>Дроп:</b> {{ item['drop'] }}</p>
-                <p><b>БК:</b> {{ item['bet'] }}</p>
+                <p>
+                    <b>Дроп:</b> {{ item['drop'] }} </p>
+                <p class="underline">
+                    <b>БК: </b>
+                    <Link :href="route('bk.show', item['bk_id'])">
+                        {{ item['bet'] }}
+                    </Link>
+                </p>
             </div>
         </div>
         <template #footer>
@@ -34,8 +40,13 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { Link } from '@inertiajs/inertia-vue3';
+
 
 export default defineComponent({
+    components: {
+        Link
+    },
     props: {
         item: Object,
         dialogPaymentVisible: Boolean

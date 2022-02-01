@@ -7,6 +7,7 @@ use App\Models\Pivot\Bets;
 use App\Models\Pivot\Countries;
 use App\Models\Pivot\Currencies;
 use App\Models\Pivot\PaymentTypes;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 class PivotEntityController extends Controller
@@ -69,6 +70,16 @@ class PivotEntityController extends Controller
     {
         return Cache::remember('currencies:all', 3600, function () {
            return Currencies::all();
+        });
+    }
+
+    /**
+     * @return mixed
+     */
+    public function responsible()
+    {
+        return Cache::remember('User:all', 3600, function () {
+           return User::all();
         });
     }
 }
