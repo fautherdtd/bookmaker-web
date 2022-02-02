@@ -10,14 +10,8 @@ class Statistics extends Model
     protected $table = 'statistics';
 
     protected $fillable = [
-        'bk_wait',
-        'bk_on_verification',
-        'bk_on_withdrawn',
-        'bk_withdrawn',
-        'bk_preparing_documents',
-        'bk_waiting_drop',
-        'bk_trouble',
-        'bk_debiting',
+        'status',
+        'cash',
         'responsible',
         'created_at',
         'updated_at'

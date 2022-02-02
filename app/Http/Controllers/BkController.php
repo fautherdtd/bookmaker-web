@@ -92,7 +92,7 @@ class BkController extends Controller
                     'responsible' => (int) $request->input('responsible'),
                     'status' => 'waiting'
                 ]);
-//            (new StatisticsController())->create($request->input('id'));
+            (new StatisticsController())->create($request->input('id'));
             return response()->json('Изменено.');
         } catch (\Exception $exception) {
             return response()->json($exception->getMessage(), 500);

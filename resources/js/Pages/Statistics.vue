@@ -11,31 +11,34 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8  bg-white">
                 <div class="py-12">
                     <div class="flex">
-                        <select name="country" id="country" class="mr-3 w-48" v-model="this.formQuery.month">
+                        <el-radio-group v-model="this.filter.month" size="large">
+                            <el-radio-button :label="this.currentMonth.current">
+                                На сегодня
+                            </el-radio-button>
+                            <el-radio-button :label="this.currentMonth.prev">
+                                За прошлый месяц
+                            </el-radio-button>
+                        </el-radio-group>
+                        <select name="country" id="country" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                            <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}
                             </option>`
                         </select>
-                        <select name="year" id="year" class="mr-3 w-48" v-model="this.formQuery.year">
+                        <select name="year" id="year" class="mr-3 w-48" v-model="this.filter.year">
+                            <option value="null"  disabled selected>Выбрать год</option>
                             <option v-for="year in years"  :value="year">
                                 {{ year }}
                             </option>`
                         </select>
                     </div>
-                    <div class="underline font-semibold text-xl mt-2">
-                        <h2>Статистика на {{ this.months[this.formQuery.month] }} {{ this.formQuery.year }}</h2>
-                    </div>
-                    <div class="mt-2">
-                        <ul>
-                            <li>- Всего БК NaN на сумму NaN</li>
-                            <li>- БК в ожидании 3  сумму NaN</li>
-                            <li>- БК на верификации NaN на сумму NaN</li>
-                            <li>- БК на выводе NaN на сумму NaN</li>
-                            <li>- БК выведено NaN на сумму NaN</li>
-                            <li>- Готовим документы NaN на сумму NaN</li>
-                            <li>- Ожидание дропа NaN на сумму NaN</li>
-                            <li>- БК на списании NaN на сумму NaN</li>
-                        </ul>
+                    <div class="mt-8">
+                        <h3 class="font-semibold text-xl mb-4">Всего БК {{ this.common.data.count }} на сумму {{ this.common.data.cash }} €</h3>
+                        <el-row :gutter="20">
+                            <el-col :span="8" v-for="stat in this.statistics.data">
+                                <span class="text-lg">БК {{ stat }} €</span>
+                            </el-col>
+                        </el-row>
                     </div>
                 </div>
             </div>
@@ -46,37 +49,53 @@
 <script>
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import throttle from "lodash/throttle";
+import pickBy from "lodash/pickBy";
+
 export default defineComponent({
     components: {
-        AppLayout,
+        AppLayout
     },
     data: function () {
         return {
             months: {
-                0: 'Январь',
-                1: 'Февраль',
-                2: 'Март',
-                3: 'Апрель',
-                4: 'Май',
-                5: 'Июнь',
-                6: 'Июль',
-                7: 'Август',
-                8: 'Сентябрь',
-                9: 'Октябрь',
-                10: 'Ноябрь',
-                11: 'Декабрь'
+                1: 'Январь',
+                2: 'Февраль',
+                3: 'Март',
+                4: 'Апрель',
+                5: 'Май',
+                6: 'Июнь',
+                7: 'Июль',
+                8: 'Август',
+                9: 'Сентябрь',
+                10: 'Октябрь',
+                11: 'Ноябрь',
+                12: 'Декабрь'
             },
             years: [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030],
-            formQuery: {
-                month: new Date().getMonth(),
-                year: new Date().getFullYear()
+            filter: {
+                month: null,
+                year: null
+            },
+            currentMonth: {
+                current: new Date().getMonth() + 1,
+                prev: (new Date().getMonth() + 1) - 1
             }
         }
     },
-    computed: {
+    watch: {
+        filter: {
+            deep: true,
+            handler: throttle(function () {
+                this.$inertia.get(route(route().current()),
+                    pickBy(this.filter),
+                    { preserveState: true }
+                )}, 150),
+        },
     },
     props: {
-        data: Object
+        common: Object,
+        statistics: Object
     }
 })
 </script>

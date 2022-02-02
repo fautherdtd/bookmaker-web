@@ -15,14 +15,8 @@ class CreateStatisticsTable extends Migration
     {
         Schema::create('statistics', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('bk_wait')->nullable();
-            $table->bigInteger('bk_on_verification')->nullable();
-            $table->bigInteger('bk_on_withdrawn')->nullable();
-            $table->bigInteger('bk_withdrawn')->nullable();
-            $table->bigInteger('bk_preparing_documents')->nullable();
-            $table->bigInteger('bk_waiting_drop')->nullable();
-            $table->bigInteger('bk_trouble')->nullable();
-            $table->bigInteger('bk_debiting')->nullable();
+            $table->string('status');
+            $table->decimal('cash');
             $table->bigInteger('responsible');
             $table->foreign('responsible')
                 ->references('id')
