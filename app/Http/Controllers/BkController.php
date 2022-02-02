@@ -21,7 +21,13 @@ class BkController extends Controller
     public function index(Request $request): \Inertia\Response
     {
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible:id,name'])
-            ->where('responsible', Auth::id());
+            ->where([
+                ['status', '!=', 'new'],
+                ['responsible', '!=', null]
+            ]);
+        if (! Auth::user()->hasRole(['administrator'])) {
+            $builder->where('responsible', Auth::id());
+        }
 
         if($request->has('withdrawn')) {
             $builder->where('status', '!=', 'withdrawn');
@@ -52,13 +58,19 @@ class BkController extends Controller
      * @param Request $request
      * @return \Inertia\Response
      */
-    public function distribution(): \Inertia\Response
+    public function distribution(Request $request): \Inertia\Response
     {
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible'])
             ->where('status', 'new');
+
+        foreach ($request->all() as $key => $value) {
+            if ($request->has($key)) {
+                $builder->where($key, $value);
+            }
+        }
         return Inertia::render('Bk/Distribution', [
             'data' => new BksResources($builder->get()),
-            'filter' => [
+            'pivot' => [
                 'countries' => $this->pivots()->countries(),
                 'bets' => $this->pivots()->bets(),
                 'drops' => $this->pivots()->drops(),
@@ -80,7 +92,7 @@ class BkController extends Controller
                     'responsible' => (int) $request->input('responsible'),
                     'status' => 'waiting'
                 ]);
-            (new StatisticsController())->create($request->input('id'));
+//            (new StatisticsController())->create($request->input('id'));
             return response()->json('Изменено.');
         } catch (\Exception $exception) {
             return response()->json($exception->getMessage(), 500);

@@ -10,30 +10,35 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex">
-                    <select name="country" id="country" class="mr-3 w-48" @change="filterTable($event, 'country_id')">
-                        <option value="0" selected disabled>Страна</option>
-                        <option v-for="country in filter['countries']"  :value="country.id">
-                            {{ country.name }}
-                        </option>
-                    </select>
-                    <select name="drop" id="drop" class="mr-3 w-48" @change="filterTable($event, 'drop')">
-                        <option value="0" selected disabled>Дроп</option>
-                        <option v-for="drop in filter['drops']"  :value="drop">
-                            {{ drop }}
-                        </option>
-                    </select>
-                    <select name="bk" id="bk" class="mr-3" @change="filterTable($event, 'bk_id')">
-                        <option value="none" selected disabled>БК</option>
-                        <option v-for="bet in filter['bets']" :value="bet.id">
-                            {{ bet.name }}
-                        </option>
-                    </select>
-                    <select name="dropguide" id="dropguide" class="mr-3 w-48" @change="filterTable($event, 'drop_guide')">
-                        <option value="0" selected disabled>Дроповод</option>
-                        <option v-for="guide in filter['dropGuides']" :value="guide">
-                            {{ guide }}
-                        </option>
-                    </select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Страна"
+                        v-model="this.filter.country_id"
+                        :reduce="(option) => option.id"
+                        name="country_id"
+                        :options="countriesSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Дроп"
+                        v-model="this.filter.drop"
+                        :reduce="(option) => option.code"
+                        :options="dropsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="БК"
+                        v-model="this.filter.bet_id"
+                        :reduce="(option) => option.id"
+                        :options="betsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Дроповод"
+                        v-model="this.filter.drop_guide"
+                        :reduce="(option) => option.code"
+                        :options="dropGuidesSelect">
+                    </v-select>
                     <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
                 </div>
             </div>
@@ -52,16 +57,18 @@
                     <el-table-column prop="status" sortable label="Статус"/>
                     <el-table-column label="Ответственный" fixed="right" width="230">
                         <template #default="scope">
-                            <select name="responsibleID" id="responsibleID" class="mr-2"
-                                v-on:change="changeSaveDistribution($event)">
-                                <option value="null" disabled selected>Не выбран</option>
-                                <hr>
-                                <option :value="user.id" v-for="user in filter['responsible']">
-                                    {{ user.name }}
+                            <select name="responsibleID"
+                                    id="responsibleID"
+                                    class="mr-2"
+                                v-on:change="changeSaveDistribution($event, scope.row.id)">
+                                <option value="" disabled selected>Сотрудник</option>
+                                <option :value="user.id" v-for="user in responsibleSelect">
+                                    {{ user.label }}
                                 </option>
                             </select>
                             <el-button circle type="success"
-                                       v-on:click="saveDistribution(this.responsibleID, scope.row.id)">
+                                       :disabled="this.responsible.btn !== scope.row.id"
+                                       v-on:click="saveDistribution(this.responsible.id, scope.row.id)">
                                 <i class="lni lni-checkmark"></i>
                             </el-button>
                         </template>
@@ -81,35 +88,44 @@ import {
 } from '@element-plus/icons-vue'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
 import {ElMessage} from "element-plus";
+import vSelect from "vue-select";
+import {
+    Bets,
+    Common,
+    Countries,
+    DropGuides,
+    Responsible,
+    TypePayments
+} from "../../Mixins/Filters";
 
 export default defineComponent({
     components: {
         AppLayout,
         Link,
         Edit,
-        JetSecondaryButton
+        JetSecondaryButton,
+        vSelect
     },
+    mixins: [
+        TypePayments,
+        DropGuides,
+        Bets,
+        Countries,
+        Responsible,
+        Common
+    ],
     data: function () {
         return {
-            responsibleID: null
+            responsible: {
+                id: null,
+                btn: null
+            }
         }
     },
     methods: {
-        filterTable: function (val, queryKey) {
-            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
-            let queryParam = queryKey + '=' + value;
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href + '?' + queryParam);
-        },
-        resetFilterTable: function () {
-            console.log(window.location.href.split("?")[0]);
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href.split("?")[0]);
-        },
-        changeSaveDistribution: function (event) {
-            this.responsibleID = event.target.value
+        changeSaveDistribution: function (event, scopeID) {
+            this.responsible.id = event.target.value
+            this.responsible.btn = scopeID
         },
         saveDistribution: function (responsible, rowID) {
             if (responsible == null) {
@@ -119,6 +135,7 @@ export default defineComponent({
             axios.put(route('bk.distributionSave'), {responsible: responsible, id: rowID})
                 .then(r => {
                     ElMessage.success("Ответственный добавлен.");
+                    this.$inertia.get(route('bk.distribution'))
                 })
                 .catch(r => ElMessage.error("Произошла ошибка, попробуйте еще раз."))
         }
@@ -126,8 +143,7 @@ export default defineComponent({
 
     props: {
         data: Object,
-        filter: Object,
-        responsible: Object
+        pivot: Object,
     }
 })
 </script>

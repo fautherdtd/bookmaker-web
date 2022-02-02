@@ -17,8 +17,8 @@ class BkResources extends JsonResource
             'drop_guide' => $this->drop_guide,
             'status' => $this->statuses,
             'responsible' => [
-                'id' => $this->userResponsible->id,
-                'name' => $this->userResponsible->name
+                'id' => $this->userResponsible->id ?? 0,
+                'name' => $this->userResponsible->name ?? 'Не выбран'
             ]
         ];
     }
