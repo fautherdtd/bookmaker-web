@@ -22,11 +22,12 @@ class BkController extends Controller
     {
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'userResponsible:id,name'])
             ->where('responsible', Auth::id());
-        if($request->has('withdrawn_bk')) {
-            $builder->where('status', 'withdrawn_bk');
+
+        if($request->has('withdrawn')) {
+            $builder->where('status', '!=', 'withdrawn');
         }
         foreach ($request->all() as $key => $value) {
-            if ($request->has($key)) {
+            if ($request->has($key) && !$request->input('withdrawn')) {
                 $builder->where($key, $value);
             }
         }

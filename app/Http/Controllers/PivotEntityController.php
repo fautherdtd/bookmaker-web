@@ -38,7 +38,7 @@ class PivotEntityController extends Controller
      */
     public function drops()
     {
-        return Cache::remember('drop:all', 360, function () {
+        return Cache::remember('drop:all', 1, function () {
            return Bks::pluck('drop');
         });
     }

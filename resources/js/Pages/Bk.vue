@@ -18,45 +18,51 @@
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Страна"
-                        @option:selected="filterTable($event, 'country_id')"
+                        v-model="this.filter.country_id"
+                        :reduce="(option) => option.id"
                         name="country_id"
                         :options="countriesSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Дроп"
-                        @option:selected="filterTable($event, 'drop')"
+                        v-model="this.filter.drop"
+                        :reduce="(option) => option.code"
                         :options="dropsSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="БК"
-                        @option:selected="filterTable($event, 'bet_id')"
+                        v-model="this.filter.bet_id"
+                        :reduce="(option) => option.id"
                         :options="betsSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Дроповод"
-                        @option:selected="filterTable($event, 'drop_guide')"
+                        v-model="this.filter.drop_guide"
+                        :reduce="(option) => option.code"
                         :options="dropGuidesSelect">
                     </v-select>
                     <v-select
                         class="mr-3 w-48 bg-white"
                         placeholder="Статус"
-                        @option:selected="filterTable($event, 'status')"
+                        v-model="this.filter.status"
+                        :reduce="(option) => option.code"
                         :options="statusesSelect">
                     </v-select>
                     <v-select
                         class="w-48 bg-white"
                         placeholder="Ответственный"
-                        @option:selected="filterTable($event, 'responsible')"
+                        v-model="this.filter.responsible"
+                        :reduce="(option) => option.id"
                         :options="responsibleSelect">
                     </v-select>
                 </div>
             </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6 flex justify-between">
                 <label for="disable-bk">
-                    <input type="checkbox" id="disable-bk" @change="filterTable($event, 'withdrawn_bk')">
+                    <input type="checkbox" id="disable-bk" v-model="this.filter.withdrawn">
                     Не отображать выведенный бк
                 </label>
                 <button class="underline ml-3" @click="resetFilterTable">Сбросить фильтры</button>
@@ -112,8 +118,12 @@ import {
     Currencies,
     DropGuides, Responsible,
     Statuses,
-    TypePayments
+    TypePayments,
+    Common
 } from '../Mixins/Filters'
+import pickBy from 'lodash/pickBy'
+import throttle from 'lodash/throttle'
+import mapValues from 'lodash/mapValues'
 
 export default defineComponent({
     components: {
@@ -130,37 +140,11 @@ export default defineComponent({
         DropGuides,
         Bets,
         Countries,
-        Responsible
+        Responsible,
+        Common
     ],
     data: function () {
         return {
-            filter: {
-                country_id: 0
-            }
-        }
-    },
-    methods: {
-        filterTable: function (val, queryKey) {
-            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.code;
-            let queryParam = queryKey + '=' + value;
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href + '?' + queryParam);
-            this.updateFilterTable()
-        },
-        updateFilterTable: function() {
-            let params = location.search
-                .slice(1)
-                .split('&')
-                .map(p => p.split('='))
-                .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
-            this.$inertia.get(route('bk.index'), params, { replace: true, preserveState: true })
-        },
-        resetFilterTable: function () {
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href.split("?")[0]);
-            this.$inertia.get(route('bk.index'))
         }
     },
     props: {

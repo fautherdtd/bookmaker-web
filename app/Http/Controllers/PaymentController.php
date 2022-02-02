@@ -19,16 +19,21 @@ class PaymentController extends Controller
     /**
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $builder = Payments::with(['country', 'type'])
             ->whereHas('bk', function($query){
                 $query->where('responsible', Auth::id());
-            })
-            ->get();
+            });
+
+        foreach ($request->all() as $key => $value) {
+            if ($request->has($key)) {
+                $builder->where($key, $value);
+            }
+        }
         return Inertia::render('Payments', [
-            'data' => new PaymentsResources($builder),
-            'filter' => [
+            'data' => new PaymentsResources($builder->get()),
+            'pivot' => [
                 'countries' => $this->pivots()->countries(),
                 'drops' => $this->pivots()->drops(),
                 'type' => $this->pivots()->typePayments(),

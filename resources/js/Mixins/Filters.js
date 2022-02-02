@@ -1,3 +1,7 @@
+import mapValues from "lodash/mapValues";
+import throttle from "lodash/throttle";
+import pickBy from "lodash/pickBy";
+
 export const Currencies = {
     computed: {
         currenciesSelect: function () {
@@ -36,7 +40,7 @@ export const TypePayments = {
         typePaymentsSelect: function () {
             return this.pivot.type.map(function(item) {
                 return {
-                    code: item.id,
+                    id: item.id,
                     label: item.title
                 }
             })
@@ -69,7 +73,7 @@ export const Countries = {
         countriesSelect: function () {
             return this.pivot.countries.map(function(item) {
                 return {
-                    code: item.id,
+                    id: item.id,
                     label: item.name
                 }
             })
@@ -85,7 +89,7 @@ export const Bets = {
         betsSelect: function () {
             return this.pivot.bets.map(function(item) {
                 return {
-                    code: item.id,
+                    id: item.id,
                     label: item.name
                 }
             })
@@ -134,7 +138,7 @@ export const Responsible = {
         responsibleSelect: function () {
             return this.pivot.responsible.map(function(item) {
                 return {
-                    code: item.id,
+                    id: item.id,
                     label: item.name
                 }
             })
@@ -144,32 +148,36 @@ export const Responsible = {
         pivot: Object
     }
 }
-//
-// export const Common = {
-//     method: {
-//         filterTable: function (val, queryKey) {
-//             let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
-//             let queryParam = queryKey + '=' + value;
-//             window.history.pushState({
-//                 path: window.location.href
-//             }, '', window.location.href + '?' + queryParam);
-//             this.updateFilterTable()
-//         },
-//         updateFilterTable: function() {
-//             let params = location.search
-//                 .slice(1)
-//                 .split('&')
-//                 .map(p => p.split('='))
-//                 .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
-//             console.log(params)
-//             this.$inertia.get(route('bk.index'), params, { replace: true, preserveState: true })
-//         },
-//         resetFilterTable: function () {
-//             console.log(window.location.href.split("?")[0]);
-//             window.history.pushState({
-//                 path: window.location.href
-//             }, '', window.location.href.split("?")[0]);
-//             this.$inertia.get(route('bk.index'))
-//         }
-//     }
-// }
+
+export const Common = {
+    data: function () {
+        return {
+            filter: {
+                country_id: null,
+                drop: null,
+                bet_id: null,
+                drop_guide: null,
+                status: null,
+                responsible: null,
+                withdrawn: null,
+                type_id: null,
+            }
+        }
+    },
+    methods: {
+        resetFilterTable: function () {
+            this.filter = mapValues(this.filter, () => null)
+        },
+    },
+    watch: {
+        filter: {
+            deep: true,
+            handler: throttle(function () {
+                console.log(this.filter)
+                this.$inertia.get(route(route().current()),
+                    pickBy(this.filter),
+                    { preserveState: true }
+                )}, 150),
+        },
+    },
+}

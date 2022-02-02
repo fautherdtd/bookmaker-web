@@ -13,30 +13,34 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex">
-                    <select name="country" id="country" class="mr-3 w-48" @change="filterTable($event, 'country_id')">
-                        <option value="0" selected disabled>Страна</option>
-                        <option v-for="country in filter['countries']"  :value="country.id">
-                            {{ country.name }}
-                        </option>
-                    </select>
-                    <select name="drop" id="drop" class="mr-3 w-48" @change="filterTable($event, 'drop')">
-                        <option value="0" selected disabled>Дроп</option>
-                        <option v-for="drop in filter['drops']"  :value="drop">
-                            {{ drop }}
-                        </option>
-                    </select>
-                    <select name="types" id="types" class="mr-3 w-48" @change="filterTable($event, 'type_id')">
-                        <option value="0" selected disabled>Тип платежки</option>
-                        <option v-for="type in filter['type']"  :value="type.id">
-                            {{ type.title }}
-                        </option>
-                    </select>
-                    <select name="status" id="status" class="mr-3 w-48" @change="filterTable($event, 'status')">
-                        <option value="0" selected disabled>Статус</option>
-                        <option v-for="(val, key) in filter['status']"  :value="key">
-                            {{ val }}
-                        </option>
-                    </select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Страна"
+                        v-model="this.filter.country_id"
+                        :reduce="(option) => option.id"
+                        :options="countriesSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Дроп"
+                        v-model="this.filter.drop"
+                        :reduce="(option) => option.code"
+                        :options="dropsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Тип платежки"
+                        v-model="this.filter.type_id"
+                        :reduce="(option) => option.id"
+                        :options="typePaymentsSelect">
+                    </v-select>
+                    <v-select
+                        class="mr-3 w-48 bg-white"
+                        placeholder="Статус"
+                        v-model="this.filter.status"
+                        :reduce="(option) => option.code"
+                        :options="statusesSelect">
+                    </v-select>
                     <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
                 </div>
             </div>
@@ -70,7 +74,7 @@
                 </el-table>
             </div>
             <PaymentShow
-                v-if="this.showItem !== null"
+                v-if="this.showItem != null"
                 :item="this.showItem"
                 :dialogPaymentVisible="this.dialogPaymentVisible"
             />
@@ -84,17 +88,38 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import PaymentShow from '@/Pages/Payment/Show.vue'
+import vSelect from 'vue-select'
 import {
-    Edit,
-} from '@element-plus/icons-vue'
+    Bets,
+    BkList,
+    Common,
+    Countries,
+    Currencies,
+    DropGuides,
+    Responsible,
+    Statuses,
+    TypePayments
+} from "../Mixins/Filters";
 
 export default defineComponent({
     components: {
         AppLayout,
         JetSecondaryButton,
         Link,
-        PaymentShow
+        PaymentShow,
+        vSelect
     },
+    mixins: [
+        Currencies,
+        Statuses,
+        BkList,
+        TypePayments,
+        DropGuides,
+        Bets,
+        Countries,
+        Responsible,
+        Common
+    ],
     data: function () {
         return {
             showItem: null,
@@ -108,19 +133,6 @@ export default defineComponent({
             })
             this.dialogPaymentVisible = true
         },
-        filterTable: function (val, queryKey) {
-            let value = queryKey === 'withdrawn_bk' ? val.target.checked : val.target.value;
-            let queryParam = queryKey + '=' + value;
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href + '?' + queryParam);
-        },
-        resetFilterTable: function () {
-            console.log(window.location.href.split("?")[0]);
-            window.history.pushState({
-                path: window.location.href
-            }, '', window.location.href.split("?")[0]);
-        }
     },
     props: {
         data: Object,
@@ -128,7 +140,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style scoped>
-
-</style>
