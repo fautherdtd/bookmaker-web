@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Data\GenerateCurrencies;
 use App\Console\Data\ImportData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        ImportData::class
+        ImportData::class,
+        GenerateCurrencies::class
     ];
     /**
      * Define the application's command schedule.

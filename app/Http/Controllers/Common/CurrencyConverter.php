@@ -13,31 +13,23 @@ class CurrencyConverter
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => 'https://currency-converter5.p.rapidapi.com/currency/',
+            'base_uri' => getenv('API_ACC_SYS'),
             'timeout'  => 2.0,
+            'headers'  => [
+                'Authorization' => 'Bearer ' . getenv('API_ACC_SYS_TOKEN')
+            ]
         ]);
     }
 
     /**
-     * @param string $currency
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function convert(string $currency)
+    public function convert()
     {
-        $response = $this->client->get('convert', [
-            'headers' => [
-                'x-rapidapi-key' => getenv('RAPIDAPI_KEY'),
-                'x-rapidapi-host' => getenv('RAPIDAPI_HOST')
-            ],
-            'query' => [
-                'format' => 'json',
-                'from' => 'EUR',
-                'to' => $currency,
-                'amount' => '1.00'
-            ]
-        ]);
+        $response = $this->client->get('currencies');
         $result = json_decode($response->getBody());
         return $result->rates;
     }
+
 }

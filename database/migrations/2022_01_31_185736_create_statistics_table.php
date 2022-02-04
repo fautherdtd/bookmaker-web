@@ -18,6 +18,7 @@ class CreateStatisticsTable extends Migration
             $table->string('status');
             $table->decimal('cash');
             $table->bigInteger('responsible');
+            $table->bigInteger('bk_id');
             $table->foreign('responsible')
                 ->references('id')
                 ->on('users');

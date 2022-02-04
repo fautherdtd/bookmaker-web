@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\StatisticsController;
 use App\Models\Bks as BkModel;
+use App\Models\Payments;
 use App\Models\Pivot\BkStories;
 use App\Models\User;
 use App\Resources\BK\BkItemResources;
 use App\Resources\BK\BksResources;
+use App\Resources\Payments\Selects\PaymentSelectsResources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use App\Http\Controllers\StatisticsController;
 
 class BkController extends Controller
 {
@@ -86,17 +89,18 @@ class BkController extends Controller
      */
     public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
     {
-        try {
-            BkModel::where('id', (int) $request->input('id'))
-                ->update([
-                    'responsible' => (int) $request->input('responsible'),
-                    'status' => 'waiting'
-                ]);
-            (new StatisticsController())->create($request->input('id'));
-            return response()->json('Изменено.');
-        } catch (\Exception $exception) {
-            return response()->json($exception->getMessage(), 500);
+        DB::beginTransaction();
+        BkModel::where('id', (int) $request->input('id'))
+            ->update([
+                'responsible' => (int) $request->input('responsible'),
+                'status' => 'waiting'
+            ]);
+        if (! (new StatisticsController())->create($request->input('id'))) {
+            DB::rollBack();
+            return response()->json('Модель статистики не отвечает. Попробуйте еще раз.', 500);
         }
+        DB::commit();
+        return response()->json('Ответственный добавлен.');
     }
 
     /**
@@ -122,10 +126,17 @@ class BkController extends Controller
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments'])
             ->where('id', $id)
             ->first();
+        $payments = Payments::with(['country', 'type', 'bk']);
+        if (! Auth::user()->hasRole(['administrator'])) {
+            $payments->whereHas('bk', function($query){
+                $query->where('responsible', Auth::id());
+            });
+        }
         return Inertia::render('Bk/Edit', [
             'item' => new BkItemResources($builder),
             'statuses' => BkModel::STATUSES,
-            'responsible' => User::all()
+            'responsible' => User::all(),
+            'payments' => new PaymentSelectsResources($payments->get())
         ]);
     }
 
@@ -156,8 +167,8 @@ class BkController extends Controller
             array_push($actions, ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"']);
         }
         if ($request->input('status') != $model->status) {
-            $model->status = $request->input('status');
             array_push($actions, ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"']);
+            $model->status = $request->input('status');
         }
         if ($request->filled('comment')) {
             array_push($actions, ['Добавлен комментарий "' . $request->input('comment') . '"']);
@@ -169,10 +180,28 @@ class BkController extends Controller
             $model->responsible = $request->input('responsible');
             array_push($actions, ['Был изменен ответственный.']);
         }
-        $model->save();
         if ($stories = $this->storeBkStories($id, $actions)) {
             return response()->json($stories, 500);
         }
+        // Update statistics for BK
+        if (! (new StatisticsController())->update($id)) {
+            return response()->json('Модель статистики не отвечает.');
+        }
+        // Increment Payment
+        if (
+            $request->filled('transactions.sum') &&
+            $request->filled('transactions.payment_id')
+        ) {
+            if (! (new PaymentController())->incrementSum(
+                $request->input('transactions.payment_id'),
+                $request->input('transactions.sum'),
+                $model->currency
+            )) {
+               return response()->json('Ошибка тракзации.');
+            }
+            $model->sum = $model->sum - $request->input('transactions.sum');
+        }
+        $model->save();
         return response()->json('Изменено.');
     }
 

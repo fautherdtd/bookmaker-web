@@ -5,6 +5,7 @@ namespace App\Console\Data;
 use App\Http\Controllers\Common\CurrencyConverter;
 use App\Models\Pivot\Currencies;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class GenerateCurrencies extends Command
 {
@@ -38,20 +39,14 @@ class GenerateCurrencies extends Command
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(
-        Currencies $currencies,
-        CurrencyConverter $converter
-    )
-    {
+    public function handle(Currencies $currencies) {
         $bar = $this->output->createProgressBar($currencies::count());
         foreach ($currencies->all() as $currency) {
-            $temp = $currency::find($currency->id);
-            if ($currency->is_exchange) {
-                $current = (array) $converter->convert($currency->code);
-                $temp->exchange = floatval($current[$currency->code]->rate);
-                $temp->save();
-            }
-            sleep(2);
+            DB::table('currencies')
+                ->updateOrInsert(
+                    ['code' => $currency->code],
+                    ['exchange' => $currency->exchange]
+                );
             $bar->advance();
         }
         $bar->finish();

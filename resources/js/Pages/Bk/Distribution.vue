@@ -133,11 +133,13 @@ export default defineComponent({
                 return
             }
             axios.put(route('bk.distributionSave'), {responsible: responsible, id: rowID})
-                .then(r => {
-                    ElMessage.success("Ответственный добавлен.");
+                .then((result) => {
+                    ElMessage.success(result.data);
                     this.$inertia.get(route('bk.distribution'))
                 })
-                .catch(r => ElMessage.error("Произошла ошибка, попробуйте еще раз."))
+                .catch((r) => {
+                    ElMessage.error(r.response.data)
+                })
         }
     },
 

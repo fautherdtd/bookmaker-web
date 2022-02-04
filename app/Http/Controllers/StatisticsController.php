@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Common\Helpers;
 use App\Models\Bks;
 use App\Models\Pivot\Currencies;
+use App\Models\Statistics;
 use App\Models\Statistics as StatisticsModel;
 use App\Resources\Statistics\Responsible\StatisticsCommonResources;
 use App\Resources\Statistics\StatisticsResources;
@@ -14,19 +16,14 @@ use Inertia\Inertia;
 
 class StatisticsController extends Controller
 {
+    use Helpers;
+
     /**
+     * @param \Illuminate\Http\Request $request
      * @return \Inertia\Response
      */
     public function index(\Illuminate\Http\Request $request): \Inertia\Response
     {
-        $month = $request->has('month') ?
-            Carbon::create()->day(1)->month(
-                (int) $request->input('month')
-            ) : Carbon::now()->month;
-        $year = $request->has('year') ?
-            Carbon::create()->day(1)->year(
-                (int) $request->input('year')
-            ) : Carbon::now()->year;
         $statistics = DB::table('statistics')
             ->select(
                 'status',
@@ -34,15 +31,15 @@ class StatisticsController extends Controller
                 DB::raw('(SELECT count(status) FROM statistics as c WHERE c.status = statistics.status) as count'),
             )
             ->where('responsible', Auth::id())
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $this->carbonMonth($request))
+            ->whereYear('created_at', $this->carbonYear($request))
             ->groupBy('status')
             ->get();
         $common = DB::table('statistics')
             ->select(DB::raw('sum(cash) as cash, count(id) as count'))
             ->where('responsible', Auth::id())
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $this->carbonMonth($request))
+            ->whereYear('created_at', $this->carbonYear($request))
             ->get();
         return Inertia::render('Statistics', [
             'statistics' => new StatisticsResources($statistics),
@@ -59,16 +56,35 @@ class StatisticsController extends Controller
     }
 
     /**
-     *
+     * @param int $bkID
+     * @return bool
      */
-    public function create(int $bkID)
+    public function create(int $bkID): bool
     {
         $bk = Bks::find($bkID);
-        $currency = Currencies::where('code', $bk->currency)->first();
-        StatisticsModel::create([
-            'responsible' => $bk->responsible,
-            'status' => $bk->status,
-            'cash' => floatval($bk->sum / floatval($currency->exchange))
-        ]);
+        $model = new StatisticsModel;
+        $model->responsible = $bk->responsible;
+        $model->status = $bk->status;
+        $model->bk_id = $bkID;
+        $model->cash = $this->converterCurrency($bk->currency, $bk->sum);
+        return $model->save();
+    }
+
+    /**
+     * @param int $bkID
+     * @return bool
+     */
+    public function update(int $bkID): bool
+    {
+        $bk = Bks::find($bkID);
+        $model = StatisticsModel::where([
+            ['bk_id', $bkID],
+            ['responsible', $bk->responsible]
+        ])->first();
+        $model->responsible = $bk->responsible;
+        $model->status = $bk->status;
+        $model->bk_id = $bkID;
+        $model->cash = $this->converterCurrency($bk->currency, $bk->sum);
+        return $model->save();
     }
 }

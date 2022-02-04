@@ -52,6 +52,7 @@
                         :options="statusesSelect">
                     </v-select>
                     <v-select
+                        v-if="$page.props.permission.isAdmin"
                         class="w-48 bg-white"
                         placeholder="Ответственный"
                         v-model="this.filter.responsible"

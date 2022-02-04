@@ -64,6 +64,23 @@
                                 </option>
                             </select>
                         </div>
+                        <div class="col-span-6 sm:col-span-4 flex" v-if="form.status === 'withdrawn'">
+                            <div class="mr-3">
+                                <jet-label for="transaction-sum" value="Сумма" />
+                                <jet-input id="transaction-sum" type="text" class="mt-1 block w-full"
+                                           v-model="form.transactions.sum"/>
+                            </div>
+                            <div>
+                                <jet-label for="transaction-payment" value="Платежка" />
+                                <select name="transaction-payment" id="transaction-payment" class="w-60"
+                                        v-model="form.transactions.payment_id">
+                                    <option value="null" disabled>Платежки</option>
+                                    <option :value="payment.id" v-for="payment in this.payments.data">
+                                        {{ payment.label }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
                     </template>
                     <template #actions>
                         <jet-action-message :on="form.recentlySuccessful" class="mr-3">
@@ -113,7 +130,11 @@ export default defineComponent({
                 sum: this.item.data.sum,
                 status: this.item.data.status.key,
                 comment: null,
-                responsible: this.item.data.responsible.id
+                responsible: this.item.data.responsible.id,
+                transactions: {
+                    sum: null,
+                    payment_id: null
+                }
             }),
         }
     },
@@ -121,6 +142,7 @@ export default defineComponent({
         editBk() {
             this.form.put(route('bk.update', this.item.data.id), {
                 errorBag: 'editBk',
+                preserveScroll: true,
                 onSuccess: () => {
                     this.form.reset()
                     ElMessage.error('Сохранено.');
@@ -135,7 +157,8 @@ export default defineComponent({
     },
     props: {
         item: Object,
-        responsible: Object
+        responsible: Object,
+        payments: Object
     }
 })
 </script>

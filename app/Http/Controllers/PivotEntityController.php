@@ -8,6 +8,7 @@ use App\Models\Pivot\Countries;
 use App\Models\Pivot\Currencies;
 use App\Models\Pivot\PaymentTypes;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class PivotEntityController extends Controller
@@ -39,7 +40,14 @@ class PivotEntityController extends Controller
     public function drops()
     {
         return Cache::remember('drop:all', 1, function () {
-           return Bks::pluck('drop');
+           $builder = Bks::where([
+               ['status', '!=', 'new'],
+               ['responsible', '!=', null]
+           ]);
+           if (! Auth::user()->hasRole(['administrator'])) {
+               $builder->where('responsible', Auth::id());
+           }
+           return $builder->pluck('drop');
         });
     }
 
@@ -48,8 +56,15 @@ class PivotEntityController extends Controller
      */
     public function dropGuides()
     {
-        return Cache::remember('dropGuides:all', 360, function () {
-           return Bks::pluck('drop_guide');
+        return Cache::remember('dropGuides:all', 1, function () {
+            $builder = Bks::where([
+                ['status', '!=', 'new'],
+                ['responsible', '!=', null]
+            ]);
+            if (! Auth::user()->hasRole(['administrator'])) {
+                $builder->where('responsible', Auth::id());
+            }
+            return $builder->pluck('drop_guide');
         });
     }
 

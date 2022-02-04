@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Common\Helpers;
 use App\Models\Bks;
 use App\Models\Payments;
 use App\Resources\BK\BksResources;
@@ -16,15 +17,18 @@ use Inertia\Response;
 
 class PaymentController extends Controller
 {
+    use Helpers;
     /**
      * @return Response
      */
     public function index(Request $request): Response
     {
-        $builder = Payments::with(['country', 'type'])
-            ->whereHas('bk', function($query){
+        $builder = Payments::with(['country', 'type']);
+        if (! Auth::user()->hasRole(['administrator'])) {
+            $builder->whereHas('bk', function($query){
                 $query->where('responsible', Auth::id());
             });
+        }
 
         foreach ($request->all() as $key => $value) {
             if ($request->has($key)) {
@@ -130,13 +134,27 @@ class PaymentController extends Controller
     public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            Payments::whereId( $id)
+            Payments::whereId($id)
                 ->update($request->all());
             return response()->json('Сохранен.');
         } catch (\Exception $exception) {
             return response()->json($exception->getMessage(), 500);
         }
+    }
 
+    /**
+     * @param int $id
+     * @param int $sum
+     * @param string $currency
+     * @return bool
+     */
+    public function incrementSum(int $id, int $sum, string $currency): bool
+    {
+        $model = Payments::find($id);
+        $value = $currency !== $model->currency ?
+            $this->converterCurrency($model->currency, $sum) : $sum;
+        $model->sum = $model->sum + intval($value);
+        return $model->save();
     }
 }
 

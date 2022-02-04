@@ -19,7 +19,18 @@
                     :default-sort="{ prop: 'name' }"
                 >
                     <el-table-column prop="name" sortable label="ФИО" />
-                    <el-table-column prop="roles" sortable label="Роль" />
+                    <el-table-column prop="roles" sortable label="Роль" /><el-table-column fixed="right" label="Действия" >
+                    <template #default="scope">
+                        <el-button-group class="ml-4">
+                            <el-button type="primary">
+                                <i class="lni lni-eye"></i>
+                            </el-button>
+                            <el-button type="primary">
+                                <i class="lni lni-close"></i>
+                            </el-button>
+                        </el-button-group>
+                    </template>
+                </el-table-column>
                 </el-table>
             </div>
         </div>
