@@ -151,20 +151,20 @@ class BkController extends Controller
         $model = BkModel::find($id);
         $actions = [];
         if ($request->input('email') != $model->email) {
-            $model->email = $request->input('email');
             $actions[] = ['Логин почты изменен с "' . $model->email . '" на "' . $request->input('email') . '"'];
+            $model->email = $request->input('email');
         }
         if ($request->input('password') != $model->password) {
-            $model->email = $request->input('password');
             $actions[] = ['Пароль почты изменен с "' . $model->password . '" на "' . $request->input('password') . '"'];
+            $model->email = $request->input('password');
         }
         if ($request->input('info') != $model->info) {
-            $model->info = $request->input('info');
             $actions[] = ['Доп.информация изменена с "' . $model->info . '" на "' . $request->input('info') . '"'];
+            $model->info = $request->input('info');
         }
         if ($request->input('sum') != $model->sum) {
-            $model->sum = $request->input('sum');
             $actions[] = ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"'];
+            $model->sum = $request->input('sum');
         }
         if ($request->input('status') != $model->status) {
             $actions[] = ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"'];

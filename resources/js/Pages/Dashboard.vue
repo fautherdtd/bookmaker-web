@@ -33,16 +33,16 @@
                     </div>
                     <div class="flex justify-between mt-2">
                         <ul>
-                            <li>- Всего дропов: {{ this.common.count.data.all }}</li>
-                            <li>- Активных дропов: {{ this.common.count.data.active }}</li>
-                            <li>- Дропов в блоке: {{ this.common.count.data.trouble }}</li>
-                            <li>- Выведено дропов: {{ this.common.count.data.withdrawn }}</li>
+                            <li>- Всего дропов: {{ this.common.count.count }}</li>
+                            <li>- Активных дропов: {{ this.common.count.active }}</li>
+                            <li>- Дропов в блоке: {{ this.common.count.trouble }}</li>
+                            <li>- Выведено дропов: {{ this.common.count.withdrawn }}</li>
                         </ul>
                         <ul>
-                            <li>- Общая сумма по дропам: {{ this.common.cash.data.all }} €</li>
-                            <li>- Сумма активных дропов: {{ this.common.cash.data.active ?? 0 }} €</li>
-                            <li>- Сумма дропов в блоке: {{ this.common.cash.data.trouble ?? 0 }} €</li>
-                            <li>- Сумма выведенных дропов: {{ this.common.cash.data.withdrawn ?? 0 }} €</li>
+                            <li>- Общая сумма по дропам: {{ this.common.cash.all }} €</li>
+                            <li>- Сумма активных дропов: {{ this.common.cash.active ?? 0 }} €</li>
+                            <li>- Сумма дропов в блоке: {{ this.common.cash.trouble ?? 0 }} €</li>
+                            <li>- Сумма выведенных дропов: {{ this.common.cash.withdrawn ?? 0 }} €</li>
                         </ul>
                     </div>
                 </div>
@@ -76,6 +76,7 @@
                             <li>- Передали шт. БК</li>
                             <li>- Сумма</li>
                             <li>- Вывели шт.БК</li>
+                            <li>- Сумма</li>
                         </ul>
                         <el-card
                             class="box-card"
@@ -91,6 +92,8 @@
                                 {{ this.detailed.common.data.cash ?? 0}} €
                                 <el-divider></el-divider>
                                 {{ this.detailed.common.data.withdrawn ?? 0}}
+                                <el-divider></el-divider>
+                                {{ this.detailed.common.data.withdrawncash ?? 0}} €
                             </div>
                         </el-card>
                         <el-card
@@ -102,11 +105,13 @@
                                 </div>
                             </template>
                             <div class="text-center">
-                                {{ detailed.handed }}
+                                {{ detailed.handed ?? 0 }}
                                 <el-divider></el-divider>
-                                {{ detailed.cash }} €
+                                {{ detailed.cash ?? 0 }} €
                                 <el-divider></el-divider>
-                                {{ detailed.withdrawn }}
+                                {{ detailed.withdrawn ?? 0 }}
+                                <el-divider></el-divider>
+                                {{ detailed.withdrawncash ?? 0 }} €
                             </div>
                         </el-card>
                     </div>

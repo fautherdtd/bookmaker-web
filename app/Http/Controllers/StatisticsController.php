@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class StatisticsController extends Controller
 {
@@ -24,9 +25,9 @@ class StatisticsController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @return \Inertia\Response
+     * @return Response
      */
-    public function index(\Illuminate\Http\Request $request): \Inertia\Response
+    public function index(\Illuminate\Http\Request $request): Response
     {
         $statistics = DB::table('statistics')
             ->select(
@@ -53,14 +54,14 @@ class StatisticsController extends Controller
 
     /**
      * @param Request $request
-     * @return \Inertia\Response
+     * @return Response
      */
-    public function dashboard(Request $request): \Inertia\Response
+    public function dashboard(Request $request): Response
     {
         return Inertia::render('Dashboard', [
             'common' => [
-                'cash' => new DashboardCommonResources($this->commonDashboardStatistics($request)['cash']),
-                'count' => new DashboardCommonResources($this->commonDashboardStatistics($request)['count'])
+                'cash' => $this->commonDashboardStatistics($request)['cash']->first(),
+                'count' => $this->commonDashboardStatistics($request)['count']->first()
             ],
             'detailed' => $this->detailedSummaryDashboardStatistics($request)
         ]);
@@ -78,7 +79,8 @@ class StatisticsController extends Controller
                 ->select(
                     DB::raw('count(statistics.id) as handed'),
                     DB::raw('sum(statistics.cash) as cash'),
-                    DB::raw('(SELECT count(statistics.status) FROM statistics WHERE statistics.status = \'withdrawn\') as withdrawn'),
+                    DB::raw('COUNT((SELECT statistics.status FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawn'),
+                    DB::raw('SUM((SELECT cash FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawnCash'),
                     DB::raw('users.name'),
                 )
                 ->whereMonth('statistics.created_at', $this->carbonMonth($request))
@@ -90,6 +92,7 @@ class StatisticsController extends Controller
                     DB::raw('count(s.id) as handed'),
                     DB::raw('sum(s.cash) as cash'),
                     DB::raw('(SELECT count(s.id) FROM statistics WHERE statistics.status = \'withdrawn\') as withdrawn'),
+                    DB::raw('(SELECT sum(s.cash) FROM statistics WHERE statistics.status = \'withdrawn\') as withdrawncash'),
                 )
                 ->whereMonth('s.created_at', $this->carbonMonth($request))
                 ->whereYear('s.created_at', $this->carbonYear($request))
@@ -116,10 +119,10 @@ class StatisticsController extends Controller
                 ->get(),
             'count' => DB::table('bks')
                 ->select(
-                    DB::raw('count(status) as all'),
-                    DB::raw('(SELECT count(id) FROM bks WHERE status = \'active\') as active'),
-                    DB::raw('(SELECT count(id) FROM bks WHERE status = \'block\') as block'),
-                    DB::raw('(SELECT count(id) FROM bks WHERE status = \'withdrawn\') as withdrawn')
+                    DB::raw('count(id)'),
+                    DB::raw('count(id) filter ( where status = \'active\') as active'),
+                    DB::raw('count(id) filter ( where status = \'trouble\') as block'),
+                    DB::raw('count(id) filter ( where status = \'withdrawn\') as withdrawn')
                 )
                 ->whereMonth('created_at', $this->carbonMonth($request))
                 ->whereYear('created_at', $this->carbonYear($request))
