@@ -3,7 +3,12 @@
         <template #header>
             <div class="flex justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Распределение дропов
+                    <Link :href="route('bk.index')">
+                        <i class="lni lni-arrow-left-circle"></i>
+                    </Link>
+                    <span class="ml-2">
+                        Распределение дропов
+                    </span>
                 </h2>
             </div>
         </template>

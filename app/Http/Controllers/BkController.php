@@ -85,9 +85,9 @@ class BkController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
+    public function distributionSave(Request $request): \Illuminate\Http\RedirectResponse
     {
         DB::beginTransaction();
         BkModel::where('id', (int) $request->input('id'))
@@ -97,10 +97,10 @@ class BkController extends Controller
             ]);
         if (! (new StatisticsController())->create($request->input('id'))) {
             DB::rollBack();
-            return response()->json('Модель статистики не отвечает. Попробуйте еще раз.', 500);
+            return redirect()->back();
         }
         DB::commit();
-        return response()->json('Ответственный добавлен.');
+        return redirect()->back();
     }
 
     /**
@@ -143,49 +143,49 @@ class BkController extends Controller
     /**
      * @param int $id
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
+    public function update(int $id, Request $request)
     {
         $model = BkModel::find($id);
         $actions = [];
         if ($request->input('email') != $model->email) {
             $model->email = $request->input('email');
-            array_push($actions, ['Логин почты изменен с "' . $model->email . '" на "' . $request->input('email') . '"']);
+            $actions[] = ['Логин почты изменен с "' . $model->email . '" на "' . $request->input('email') . '"'];
         }
         if ($request->input('password') != $model->password) {
             $model->email = $request->input('password');
-            array_push($actions, ['Пароль почты изменен с "' . $model->password . '" на "' . $request->input('password') . '"']);
+            $actions[] = ['Пароль почты изменен с "' . $model->password . '" на "' . $request->input('password') . '"'];
         }
         if ($request->input('info') != $model->info) {
             $model->info = $request->input('info');
-            array_push($actions, ['Доп.информация изменена с "' . $model->info . '" на "' . $request->input('info') . '"']);
+            $actions[] = ['Доп.информация изменена с "' . $model->info . '" на "' . $request->input('info') . '"'];
         }
         if ($request->input('sum') != $model->sum) {
             $model->sum = $request->input('sum');
-            array_push($actions, ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"']);
+            $actions[] = ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"'];
         }
         if ($request->input('status') != $model->status) {
-            array_push($actions, ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"']);
+            $actions[] = ['Статус изменен с "' . $model->statuses . '" на "' . BkModel::STATUSES[$request->input('status')] . '"'];
             $model->status = $request->input('status');
         }
         if ($request->filled('comment')) {
-            array_push($actions, ['Добавлен комментарий "' . $request->input('comment') . '"']);
+            $actions[] = ['Добавлен комментарий "' . $request->input('comment') . '"'];
         }
         if (
             Auth::user()->hasRole(['administrator']) &&
             $request->input('responsible') != $model->responsible
         ) {
             $model->responsible = $request->input('responsible');
-            array_push($actions, ['Был изменен ответственный.']);
+            $actions[] = ['Был изменен ответственный.'];
         }
         if ($stories = $this->storeBkStories($id, $actions)) {
-            return response()->json($stories, 500);
+            return redirect()->back()->withErrors($stories);
         }
         // Update statistics for BK
         if (! (new StatisticsController())->update($id)) {
-            return response()->json('Модель статистики не отвечает.');
+            return redirect()->back()->withErrors($stories);
         }
         // Increment Payment
         if (
@@ -197,12 +197,13 @@ class BkController extends Controller
                 $request->input('transactions.sum'),
                 $model->currency
             )) {
-               return response()->json('Ошибка тракзации.');
+                return redirect()->back()->withErrors($stories);
             }
             $model->sum = $model->sum - $request->input('transactions.sum');
+            $actions[] = ['Деньги.'];
         }
         $model->save();
-        return response()->json('Изменено.');
+        return redirect()->back();
     }
 
     /**

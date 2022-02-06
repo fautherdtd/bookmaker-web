@@ -2,7 +2,12 @@
     <app-layout title="БК">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                БК - {{ item['data']['drop'] }}
+                <Link :href="route('bk.index')">
+                    <i class="lni lni-arrow-left-circle"></i>
+                </Link>
+                <span class="ml-2">
+                    БК - {{ item['data']['drop'] }}
+                </span>
             </h2>
         </template>
         <div class="py-12">

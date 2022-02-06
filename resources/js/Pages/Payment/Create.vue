@@ -1,7 +1,12 @@
 <template>
     <app-layout title="Новая платежка">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Новая платежка</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <Link :href="route('payment.index')">
+                    <i class="lni lni-arrow-left-circle"></i>
+                </Link>
+                <span class="ml-2">Новая платежка</span>
+            </h2>
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -12,13 +17,15 @@
                             <jet-label for="type_id" value="БК" />
                             <v-select
                                 v-model="form.bk"
+                                :reduce="(option) => option.code"
                                 :options="bkSelect"></v-select>
-                            <jet-input-error :message="form.errors.type_id" class="mt-2" />
+                            <jet-input-error :message="form.errors.bk" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="type_id" value="Тип платежки" />
                             <v-select
                                 v-model="form.type_id"
+                                :reduce="(option) => option.id"
                                 :options="typePaymentsSelect"></v-select>
                             <jet-input-error :message="form.errors.type_id" class="mt-2" />
                         </div>
@@ -31,6 +38,7 @@
                             <jet-label for="currency" value="Валюта" />
                             <v-select
                                 v-model="form.currency"
+                                :reduce="(option) => option.code"
                                 :options="currenciesSelect"></v-select>
                             <jet-input-error :message="form.errors.currency" class="mt-2" />
                         </div>
@@ -38,8 +46,8 @@
                             <jet-label for="status" value="Статус" />
                             <v-select
                                 v-model="form.status"
+                                :reduce="(option) => option.code"
                                 :options="statusesSelect"></v-select>
-                            <jet-input-error :message="form.errors.status" class="mt-2" />
                             <jet-input-error :message="form.errors.status" class="mt-2" />
                         </div>
                     </template>
@@ -68,7 +76,8 @@ import JetInputError from '@/Jetstream/InputError.vue'
 import JetLabel from '@/Jetstream/Label.vue'
 import {ElMessage} from "element-plus";
 import vSelect from 'vue-select'
-import {BkList, Currencies, Statuses, Countries, TypePayments} from '../../Mixins/Filters'
+import { Link } from '@inertiajs/inertia-vue3';
+import {BkList, Currencies, Statuses, Countries, TypePayments} from '@/Mixins/Filters'
 
 export default defineComponent({
     components: {
@@ -80,6 +89,7 @@ export default defineComponent({
         JetInputError,
         JetLabel,
         vSelect,
+        Link,
     },
     mixins: [
         Currencies,
@@ -105,9 +115,13 @@ export default defineComponent({
                 errorBag: 'storePayment',
                 onSuccess: () => {
                     this.form.reset()
-                    ElMessage.success('Сохранено.');
+                    ElMessage.success('Платежка создана.');
                 },
-                onError: () => {
+                onError: (r) => {
+                    if (this.form.errors.bk) {
+                        this.form.reset('bk')
+                        this.$refs.bk.focus()
+                    }
                     if (this.form.errors.type_id) {
                         this.form.reset('type_id')
                         this.$refs.type_id.focus()
@@ -124,7 +138,7 @@ export default defineComponent({
                         this.form.reset('status')
                         this.$refs.status.focus()
                     }
-                    ElMessage.error('Ошибка');
+                    ElMessage.error('Ошибка. Попробуйте еще раз.');
                 }
             })
         },

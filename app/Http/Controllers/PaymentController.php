@@ -8,8 +8,11 @@ use App\Models\Payments;
 use App\Resources\BK\BksResources;
 use App\Resources\Payments\PaymentResources;
 use App\Resources\Payments\PaymentsResources;
+use App\Services\CurrencyConverter;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -100,45 +103,45 @@ class PaymentController extends Controller
     }
 
     /**
-     * @param int $id
      * @param Request $request
+     * @return RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         Validator::make($request->all(), [
-            'bk.code' => ['required', 'exists:App\Models\Bks,id'],
-            'type_id.code' => ['required', 'exists:App\Models\Pivot\PaymentTypes,id'],
+            'bk' => ['required', 'exists:App\Models\Bks,id'],
+            'type_id' => ['required', 'exists:App\Models\Pivot\PaymentTypes,id'],
             'sum' => ['required', 'int'],
-            'currency.code' => ['required', 'exists:App\Models\Pivot\Currencies,code'],
-            'status.code' => ['required', Rule::in(['active', 'block'])],
+            'currency' => ['required', 'exists:App\Models\Pivot\Currencies,code'],
+            'status' => ['required', Rule::in(['active', 'block'])],
         ])->validateWithBag('storePayment');
-        $bk = Bks::find((int) $request->input('bk.code'));
+        $bk = Bks::find((int) $request->input('bk'));
         Payments::create([
-            'type_id' => $request->input('type_id.code'),
-            'bk_id' => $request->input('bk.code'),
+            'type_id' => $request->input('type_id'),
+            'bk_id' => $request->input('bk'),
             'sum' => $request->input('sum'),
-            'currency' => $request->input('currency.code'),
-            'status' => $request->input('status.code'),
+            'currency' => $request->input('currency'),
+            'status' => $request->input('status'),
             'drop' => $bk->drop,
             'country_id' => $bk->country_id,
         ]);
-        return response()->json('Success');
+        return redirect()->back();
     }
 
     /**
      * @param int $id
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return RedirectResponse
      */
-    public function update(int $id, Request $request): \Illuminate\Http\JsonResponse
+    public function update(int $id, Request $request): RedirectResponse
     {
         try {
             Payments::whereId($id)
                 ->update($request->all());
-            return response()->json('Сохранен.');
+            return redirect()->back();
         } catch (\Exception $exception) {
-            return response()->json($exception->getMessage(), 500);
+            return redirect()->back();
         }
     }
 
@@ -151,8 +154,7 @@ class PaymentController extends Controller
     public function incrementSum(int $id, int $sum, string $currency): bool
     {
         $model = Payments::find($id);
-        $value = $currency !== $model->currency ?
-            $this->converterCurrency($model->currency, $sum) : $sum;
+        $value = (new CurrencyConverter($sum, ['main' => $model->currency, 'sub' => $currency]))->converter();
         $model->sum = $model->sum + intval($value);
         return $model->save();
     }

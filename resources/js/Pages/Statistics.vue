@@ -19,7 +19,7 @@
                                 За прошлый месяц
                             </el-radio-button>
                         </el-radio-group>
-                        <select name="country" id="country" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                        <select name="month" id="month" class="ml-4 mr-3 w-48" v-model="this.filter.month">
                             <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}

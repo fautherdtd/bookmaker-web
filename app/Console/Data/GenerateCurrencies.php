@@ -39,9 +39,14 @@ class GenerateCurrencies extends Command
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(Currencies $currencies) {
-        $bar = $this->output->createProgressBar($currencies::count());
-        foreach ($currencies->all() as $currency) {
+    public function handle(
+        Currencies $currencies,
+        CurrencyConverter $api
+    ) {
+        $bar = $this->output->createProgressBar(
+            count($api->getCurrenciesApi())
+        );
+        foreach ($api->getCurrenciesApi() as $currency) {
             DB::table('currencies')
                 ->updateOrInsert(
                     ['code' => $currency->code],

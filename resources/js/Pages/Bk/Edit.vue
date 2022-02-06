@@ -1,7 +1,12 @@
 <template>
     <app-layout title="БК">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">БК - {{ item['data']['drop'] }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <a href="#" @click="back"><i class="lni lni-arrow-left-circle"></i></a>
+                <span class="ml-2">
+                    БК - {{ item['data']['drop'] }}
+                </span>
+            </h2>
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -145,14 +150,15 @@ export default defineComponent({
                 preserveScroll: true,
                 onSuccess: () => {
                     this.form.reset()
-                    ElMessage.error('Сохранено.');
+                    ElMessage.success('БК отредактирован.');
                 },
-                onError: () => {
-                    if(this.form.errors.comment) {
-                        ElMessage.error("Добавьте комментарий.");
-                    }
+                onError: (r) => {
+                    ElMessage.error(r);
                 }
             })
+        },
+        back() {
+            window.history.back();
         },
     },
     props: {

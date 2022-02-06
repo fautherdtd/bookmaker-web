@@ -10,7 +10,6 @@ class StatisticsResources extends JsonResource
     public function toArray($request)
     {
         foreach (Bks::STATUSES as $key=>$value) {
-//            dd($this->resource);
             if(! $this->resource->contains('status', $key) && $key !== 'new') {
                 $this->resource->push((object) [
                     'status' => $key,

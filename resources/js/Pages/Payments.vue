@@ -73,11 +73,45 @@
                     </el-table-column>
                 </el-table>
             </div>
-            <PaymentShow
-                v-if="this.showItem != null"
-                :item="this.showItem"
-                :dialogPaymentVisible="this.dialogPaymentVisible"
-            />
+            <el-dialog v-model="dialogPaymentVisible"
+                       v-if="this.showItem != null"
+                       title="Информация о платежке"
+                       width="40%"
+                       :visible.sync="dialogPaymentVisible"
+                       :before-close="handleClose">
+                <div class="flex justify-between">
+                    <div class="w-full">
+                        <h3 class="font-bold text-lg">Общая информация:</h3>
+                        <p><b>Страна:</b> {{ this.showItem['country'] }}</p>
+                        <p><b>Дата платежа:</b> {{ this.showItem['updated_at'] }}</p>
+                    </div>
+                    <div class="w-full">
+                        <h3 class="font-bold text-lg">Связанные данные:</h3>
+                        <p>
+                            <b>Дроп:</b> {{ this.showItem['drop'] }} </p>
+                        <p class="underline">
+                            <b>БК: </b>
+                            <Link :href="route('bk.show', this.showItem['bk_id'])">
+                                {{ this.showItem['bet'] }}
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+                <template #footer>
+                  <span class="dialog-footer">
+                      <div class="flex justify-between text-left">
+                          <div class="content">
+                              <p><b>Сумма:</b> {{ this.showItem['cash'] }}</p>
+                              <p><b>Валюта:</b> {{ this.showItem['currencies'] }}</p>
+                          </div>
+                          <div class="content">
+                              <p><b>Статус:</b> {{ this.showItem['status']['value'] }}</p>
+                              <p><b>Тип платежки:</b> {{ this.showItem['type']['title'] }}</p>
+                          </div>
+                      </div>
+                  </span>
+                </template>
+            </el-dialog>
         </div>
     </app-layout>
 </template>
@@ -87,7 +121,6 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import JetSecondaryButton from '@/Jetstream/SecondaryButton.vue'
 import { Link } from '@inertiajs/inertia-vue3';
-import PaymentShow from '@/Pages/Payment/Show.vue'
 import vSelect from 'vue-select'
 import {
     Bets,
@@ -106,7 +139,6 @@ export default defineComponent({
         AppLayout,
         JetSecondaryButton,
         Link,
-        PaymentShow,
         vSelect
     },
     mixins: [

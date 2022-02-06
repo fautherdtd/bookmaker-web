@@ -25,11 +25,11 @@ class CurrencyConverter
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function convert()
+    public function getCurrenciesApi()
     {
         $response = $this->client->get('currencies');
         $result = json_decode($response->getBody());
-        return $result->rates;
+        return $result;
     }
 
 }

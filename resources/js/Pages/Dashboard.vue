@@ -9,15 +9,23 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8  bg-white">
                 <div class="py-12">
                     <div class="flex" style="align-items:center">
-                        <h2 class="font-bold text-xl mr-2">
-                            Общая сводка (<span class="underline">{{ this.months[this.formQuery.month] }} {{ this.formQuery.year }}</span>):
-                        </h2>
-                        <select name="country" id="country" class="mr-3 w-48" v-model="this.formQuery.month">
+                        <h2 class="font-bold text-xl mr-2">Общая сводка:</h2>
+                        <el-radio-group v-model="this.filter.month" size="large">
+                            <el-radio-button :label="this.currentMonth.current">
+                                На сегодня
+                            </el-radio-button>
+                            <el-radio-button :label="this.currentMonth.prev">
+                                За прошлый месяц
+                            </el-radio-button>
+                        </el-radio-group>
+                        <select name="month" id="month" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                            <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}
                             </option>`
                         </select>
-                        <select name="year" id="year" class="mr-3 w-48" v-model="this.formQuery.year">
+                        <select name="year" id="year" class="mr-3 w-48" v-model="this.filter.year">
+                            <option value="null"  disabled selected>Выбрать год</option>
                             <option v-for="year in years"  :value="year">
                                 {{ year }}
                             </option>`
@@ -25,31 +33,39 @@
                     </div>
                     <div class="flex justify-between mt-2">
                         <ul>
-                            <li>- Всего дропов: 0</li>
-                            <li>- Активных дропов: 0</li>
-                            <li>- Дропов в блоке: 0</li>
-                            <li>- Выведено дропов: 0</li>
+                            <li>- Всего дропов: {{ this.common.count.data.all }}</li>
+                            <li>- Активных дропов: {{ this.common.count.data.active }}</li>
+                            <li>- Дропов в блоке: {{ this.common.count.data.trouble }}</li>
+                            <li>- Выведено дропов: {{ this.common.count.data.withdrawn }}</li>
                         </ul>
                         <ul>
-                            <li>- Общая сумма по дропам: 0 €</li>
-                            <li>- Сумма активных дропов: 0 €</li>
-                            <li>- Сумма дропов в блоке: 0 €</li>
-                            <li>- Сумма выведенных дропов: 0 €</li>
+                            <li>- Общая сумма по дропам: {{ this.common.cash.data.all }} €</li>
+                            <li>- Сумма активных дропов: {{ this.common.cash.data.active ?? 0 }} €</li>
+                            <li>- Сумма дропов в блоке: {{ this.common.cash.data.trouble ?? 0 }} €</li>
+                            <li>- Сумма выведенных дропов: {{ this.common.cash.data.withdrawn ?? 0 }} €</li>
                         </ul>
                     </div>
                 </div>
                 <hr>
                 <div class="py-12">
                     <div class="flex" style="align-items:center">
-                        <h2 class="font-bold text-xl mr-2">
-                            Подробная сводка (<span class="underline">{{ this.months[this.formQuery.month] }} {{ this.formQuery.year }}</span>):
-                        </h2>
-                        <select name="country" id="country" class="mr-3 w-48" v-model="this.formQuery.month">
+                        <h2 class="font-bold text-xl mr-2">Подробная сводка</h2>
+                        <el-radio-group v-model="this.filter.month" size="large">
+                            <el-radio-button :label="this.currentMonth.current">
+                                На сегодня
+                            </el-radio-button>
+                            <el-radio-button :label="this.currentMonth.prev">
+                                За прошлый месяц
+                            </el-radio-button>
+                        </el-radio-group>
+                        <select name="month" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                            <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}
                             </option>`
                         </select>
-                        <select name="year" id="year" class="mr-3 w-48" v-model="this.formQuery.year">
+                        <select name="year" class="mr-3 w-48" v-model="this.filter.year">
+                            <option value="null"  disabled selected>Выбрать год</option>
                             <option v-for="year in years"  :value="year">
                                 {{ year }}
                             </option>`
@@ -60,11 +76,39 @@
                             <li>- Передали шт. БК</li>
                             <li>- Сумма</li>
                             <li>- Вывели шт.БК</li>
-                            <li>- Сумма</li>
                         </ul>
-                        <el-table :data="this.data" width="70%" border>
-                            <el-table-column prop="date" label="Всего" width="180" />
-                        </el-table>
+                        <el-card
+                            class="box-card"
+                            shadow="never" >
+                            <template #header>
+                                <div class="card-header">
+                                    Всего
+                                </div>
+                            </template>
+                            <div class="text-center">
+                                {{ this.detailed.common.data.handed ?? 0}}
+                                <el-divider></el-divider>
+                                {{ this.detailed.common.data.cash ?? 0}} €
+                                <el-divider></el-divider>
+                                {{ this.detailed.common.data.withdrawn ?? 0}}
+                            </div>
+                        </el-card>
+                        <el-card
+                            class="box-card" v-for="detailed in this.detailed.responsible"
+                            shadow="never" >
+                            <template #header>
+                                <div class="card-header">
+                                    <span>{{ detailed.name }}</span>
+                                </div>
+                            </template>
+                            <div class="text-center">
+                                {{ detailed.handed }}
+                                <el-divider></el-divider>
+                                {{ detailed.cash }} €
+                                <el-divider></el-divider>
+                                {{ detailed.withdrawn }}
+                            </div>
+                        </el-card>
                     </div>
                 </div>
 
@@ -87,21 +131,25 @@
             Welcome,
         },
         data: function () {
-            return {
-                data: [
-                ]
-            }
+            return {}
         },
         mixins: [
             Statistic
-        ]
+        ],
+        props: {
+            common: Object,
+            detailed: Object
+        }
     })
 </script>
-<style>
+<style scoped>
     .statistics-ul {
-        padding-top: 42px;
-        line-height: 37px;
+        padding-top: 65px;
+        line-height: 70px;
         text-align: right;
         margin-right: 25px;
+    }
+    .el-card {
+        border: 0
     }
 </style>

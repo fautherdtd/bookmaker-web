@@ -1,8 +1,11 @@
 <template>
     <app-layout title="Платежка">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Патежка -
-                {{ item['data']['country'] }}, {{ item['data']['drop'] }}
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <Link :href="route('payment.index')">
+                    <i class="lni lni-arrow-left-circle"></i>
+                </Link>
+                <span class="ml-2">Патежка - {{ item['data']['country'] }}, {{ item['data']['drop'] }}</span>
             </h2>
         </template>
         <div class="py-12">
@@ -11,15 +14,12 @@
                     <template #title>Редактирование платежки</template>
                     <template #form>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="type_id" :value="'Тип платежки: ' + item['data']['type']['title']" />
-                            <select name="type_id" id="type_id" v-model="form.type_id">
-                                <option value="{{ form.type_id }}" disabled selected>{{ item['data']['type']['title'] }}</option>
-                                <hr>
-                                <option :value="type.id" v-for="type in pivot['type']">
-                                    {{ type.title }}
-                                </option>
-                            </select>
-                            <jet-input-error :message="form.errors.type" class="mt-2" />
+                            <jet-label for="type_id" value="Тип платежки" />
+                            <v-select
+                                v-model="form.type_id"
+                                :reduce="(option) => option.id"
+                                :options="typePaymentsSelect"></v-select>
+                            <jet-input-error :message="form.errors.type_id" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="sum" value="Сумма" />
@@ -27,31 +27,25 @@
                             <jet-input-error :message="form.errors.sum" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="currency" :value="'Тип платежки: ' + item['data']['sum']['currency']" />
-                            <select name="currency" id="currency" v-model="form.type_id">
-                                <option value="{{ form.currency }}" disabled selected>{{ item['data']['sum']['currency'] }}</option>
-                                <hr>
-                                <option :value="currency.id" v-for="currency in pivot['currencies']">
-                                    {{ currency.name }}
-                                </option>
-                            </select>
-                            <jet-input-error :message="form.errors.type" class="mt-2" />
+                            <jet-label for="currency" value="Валюта" />
+                            <v-select
+                                v-model="form.currency"
+                                :reduce="(option) => option.code"
+                                :options="currenciesSelect"></v-select>
+                            <jet-input-error :message="form.errors.currency" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="status" :value="'Статус: ' + item['data']['status']['value']" />
-                            <select name="status" id="status" v-model="form.status">
-                                <option value="{{ form.status }}" disabled selected>{{ item['data']['status']['value'] }}</option>
-                                <hr>
-                                <option :value="key" v-for="(val, key) in pivot['status']">
-                                    {{ val }}
-                                </option>
-                            </select>
-                            <jet-input-error :message="form.errors.type" class="mt-2" />
+                            <jet-label for="status" value="Статус" />
+                            <v-select
+                                v-model="form.status"
+                                :reduce="(option) => option.code"
+                                :options="statusesSelect"></v-select>
+                            <jet-input-error :message="form.errors.status" class="mt-2" />
                         </div>
                     </template>
                     <template #actions>
                         <jet-action-message :on="form.recentlySuccessful" class="mr-3">
-                            Платежка отредактирована.
+                            Платежка обновлена.
                         </jet-action-message>
                         <jet-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             Сохранить
@@ -73,6 +67,9 @@ import JetInput from '@/Jetstream/Input.vue'
 import JetInputError from '@/Jetstream/InputError.vue'
 import JetLabel from '@/Jetstream/Label.vue'
 import {ElMessage} from "element-plus";
+import { Link } from '@inertiajs/inertia-vue3';
+import vSelect from "vue-select";
+import {Currencies, Statuses, TypePayments} from "@/Mixins/Filters";
 
 export default defineComponent({
     components: {
@@ -83,7 +80,14 @@ export default defineComponent({
         JetInput,
         JetInputError,
         JetLabel,
+        Link,
+        vSelect
     },
+    mixins: [
+        Currencies,
+        Statuses,
+        TypePayments
+    ],
     data() {
         return {
             form: this.$inertia.form({
@@ -100,10 +104,10 @@ export default defineComponent({
                 errorBag: 'editPayment',
                 onSuccess: () => {
                     this.form.reset()
-                    ElMessage.error('Сохранено.');
+                    ElMessage.success('Платежка обновлена.');
                 },
-                onError: () => {
-                    ElMessage.error("Добавьте комментарий.");
+                onError: (r) => {
+                    ElMessage.error(r.response.data);
                 }
             })
         },
