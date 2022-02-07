@@ -10,7 +10,7 @@
                 <div class="py-12">
                     <div class="flex" style="align-items:center">
                         <h2 class="font-bold text-xl mr-2">Общая сводка:</h2>
-                        <el-radio-group v-model="this.filter.month" size="large">
+                        <el-radio-group v-model="this.filter.common.month" size="large">
                             <el-radio-button :label="this.currentMonth.current">
                                 На сегодня
                             </el-radio-button>
@@ -18,13 +18,13 @@
                                 За прошлый месяц
                             </el-radio-button>
                         </el-radio-group>
-                        <select name="month" id="month" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                        <select name="month" id="month" class="ml-4 mr-3 w-48" v-model="this.filter.common.month">
                             <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}
                             </option>`
                         </select>
-                        <select name="year" id="year" class="mr-3 w-48" v-model="this.filter.year">
+                        <select name="year" id="year" class="mr-3 w-48" v-model="this.filter.common.year">
                             <option value="null"  disabled selected>Выбрать год</option>
                             <option v-for="year in years"  :value="year">
                                 {{ year }}
@@ -33,13 +33,13 @@
                     </div>
                     <div class="flex justify-between mt-2">
                         <ul>
-                            <li>- Всего дропов: {{ this.common.count.count }}</li>
-                            <li>- Активных дропов: {{ this.common.count.active }}</li>
-                            <li>- Дропов в блоке: {{ this.common.count.trouble }}</li>
-                            <li>- Выведено дропов: {{ this.common.count.withdrawn }}</li>
+                            <li>- Всего дропов: {{ this.common.count.count ?? 0 }}</li>
+                            <li>- Активных дропов: {{ this.common.count.active ?? 0 }}</li>
+                            <li>- Дропов в блоке: {{ this.common.count.trouble ?? 0 }}</li>
+                            <li>- Выведено дропов: {{ this.common.count.withdrawn ?? 0 }}</li>
                         </ul>
                         <ul>
-                            <li>- Общая сумма по дропам: {{ this.common.cash.all }} €</li>
+                            <li>- Общая сумма по дропам: {{ this.common.cash.all ?? 0 }} €</li>
                             <li>- Сумма активных дропов: {{ this.common.cash.active ?? 0 }} €</li>
                             <li>- Сумма дропов в блоке: {{ this.common.cash.trouble ?? 0 }} €</li>
                             <li>- Сумма выведенных дропов: {{ this.common.cash.withdrawn ?? 0 }} €</li>
@@ -50,7 +50,7 @@
                 <div class="py-12">
                     <div class="flex" style="align-items:center">
                         <h2 class="font-bold text-xl mr-2">Подробная сводка</h2>
-                        <el-radio-group v-model="this.filter.month" size="large">
+                        <el-radio-group v-model="this.filter.responsible.month" size="large">
                             <el-radio-button :label="this.currentMonth.current">
                                 На сегодня
                             </el-radio-button>
@@ -58,17 +58,17 @@
                                 За прошлый месяц
                             </el-radio-button>
                         </el-radio-group>
-                        <select name="month" class="ml-4 mr-3 w-48" v-model="this.filter.month">
+                        <select name="month" class="ml-4 mr-3 w-48" v-model="this.filter.responsible.month">
                             <option value="null" disabled selected>Выбрать месяц</option>
                             <option v-for="(value, key) in months"  :value="key">
                                 {{ value }}
                             </option>`
                         </select>
-                        <select name="year" class="mr-3 w-48" v-model="this.filter.year">
+                        <select name="year" class="mr-3 w-48" v-model="this.filter.responsible.year">
                             <option value="null"  disabled selected>Выбрать год</option>
                             <option v-for="year in years"  :value="year">
                                 {{ year }}
-                            </option>`
+                            </option>
                         </select>
                     </div>
                     <div class="flex mt-2">
@@ -129,6 +129,8 @@
     import {
         Statistic
     } from "../Mixins/Statistics";
+    import throttle from "lodash/throttle";
+    import pickBy from "lodash/pickBy";
 
     export default defineComponent({
         components: {
@@ -136,7 +138,18 @@
             Welcome,
         },
         data: function () {
-            return {}
+            return {
+                filter: {
+                    common: {
+                        year: new Date().getFullYear(),
+                        month: new Date().getMonth() + 1
+                    },
+                    responsible: {
+                        year: new Date().getFullYear(),
+                        month: new Date().getMonth() + 1
+                    }
+                }
+            }
         },
         mixins: [
             Statistic
@@ -144,7 +157,7 @@
         props: {
             common: Object,
             detailed: Object
-        }
+        },
     })
 </script>
 <style scoped>

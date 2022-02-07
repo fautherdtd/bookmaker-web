@@ -31,9 +31,6 @@ class CreateBksTable extends Migration
                 ->on('currencies');
             $table->string('status')->default('new');
             $table->bigInteger('responsible')->nullable();
-            $table->foreign('responsible')
-                ->references('id')
-                ->on('users');
             $table->timestamps();
         });
     }

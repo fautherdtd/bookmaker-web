@@ -74,30 +74,66 @@ class StatisticsController extends Controller
     protected function detailedSummaryDashboardStatistics(Request $request): array
     {
         return [
-            'responsible' => DB::table('statistics')
-                ->leftJoin('users', 'users.id', '=', 'statistics.responsible')
-                ->select(
-                    DB::raw('count(statistics.id) as handed'),
-                    DB::raw('sum(statistics.cash) as cash'),
-                    DB::raw('COUNT((SELECT statistics.status FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawn'),
-                    DB::raw('SUM((SELECT cash FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawnCash'),
-                    DB::raw('users.name'),
-                )
-                ->whereMonth('statistics.created_at', $this->carbonMonth($request))
-                ->whereYear('statistics.created_at', $this->carbonYear($request))
-                ->groupBy('users.name')
-                ->get(),
-            'common' => new DashboardCommonResources(DB::table('statistics as s')
-                ->select(
-                    DB::raw('count(s.id) as handed'),
-                    DB::raw('sum(s.cash) as cash'),
-                    DB::raw('(SELECT count(s.id) FROM statistics WHERE statistics.status = \'withdrawn\') as withdrawn'),
-                    DB::raw('(SELECT sum(s.cash) FROM statistics WHERE statistics.status = \'withdrawn\') as withdrawncash'),
-                )
-                ->whereMonth('s.created_at', $this->carbonMonth($request))
-                ->whereYear('s.created_at', $this->carbonYear($request))
-                ->get())
+            'responsible' => $this->detailedSummaryDashboardStatisticsResponsible($request),
+            'common' => $this->detailedSummaryDashboardStatisticsCommon($request),
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @return Collection
+     */
+    protected function detailedSummaryDashboardStatisticsResponsible(Request $request): Collection
+    {
+        $month = $request->has('responsible.month') ?
+            Carbon::create()->day(1)->month(
+                (int) $request->input('responsible.month')
+            ) : Carbon::now()->month;
+        $year = $request->has('responsible.year') ?
+            Carbon::create()->day(1)->year(
+                (int) $request->input('responsible.year')
+            ) : Carbon::now()->year;
+
+        return DB::table('statistics')
+            ->leftJoin('users', 'users.id', '=', 'statistics.responsible')
+            ->select(
+                DB::raw('count(statistics.id) as handed'),
+                DB::raw('sum(statistics.cash) as cash'),
+                DB::raw('COUNT((SELECT statistics.status FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawn'),
+                DB::raw('SUM((SELECT cash FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawnCash'),
+                DB::raw('users.name'),
+            )
+            ->whereMonth('statistics.created_at', $month)
+            ->whereYear('statistics.created_at', $year)
+            ->groupBy('users.name')
+            ->get();
+    }
+
+    /**
+     * @param Request $request
+     * @return DashboardCommonResources
+     */
+    protected function detailedSummaryDashboardStatisticsCommon(Request $request): DashboardCommonResources
+    {
+        $month = $request->has('responsible.month') ?
+            Carbon::create()->day(1)->month(
+                (int) $request->input('responsible.month')
+            ) : Carbon::now()->month;
+        $year = $request->has('responsible.year') ?
+            Carbon::create()->day(1)->year(
+                (int) $request->input('responsible.year')
+            ) : Carbon::now()->year;
+        return new DashboardCommonResources(
+            DB::table('statistics as s')
+            ->select(
+                DB::raw('count(s.id) as handed'),
+                DB::raw('sum(s.cash) as cash'),
+                DB::raw('count(s.id) filter ( where s.status = \'withdrawn\') as withdrawn'),
+                DB::raw('sum(s.cash) filter ( where s.status = \'withdrawn\') as withdrawncash'),
+            )
+            ->whereMonth('s.created_at', $month)
+            ->whereYear('s.created_at', $year)
+            ->get());
     }
 
     /**
@@ -106,16 +142,24 @@ class StatisticsController extends Controller
      */
     protected function commonDashboardStatistics(Request $request): array
     {
+        $month = $request->filled('common.month') ?
+            Carbon::create()->day(1)->month(
+                (int) $request->input('common.month')
+            ) : Carbon::now()->month;
+        $year = $request->filled('common.year') ?
+            Carbon::create()->day(1)->year(
+                (int) $request->input('common.year')
+            ) : Carbon::now()->year;
         return [
             'cash' => DB::table('statistics')
                 ->select(
                     DB::raw('sum(cash) as all'),
-                    DB::raw('(SELECT sum(cash) FROM statistics WHERE status = \'active\') as active'),
-                    DB::raw('(SELECT sum(cash) FROM statistics WHERE status = \'block\') as block'),
-                    DB::raw('(SELECT sum(cash) FROM statistics WHERE status = \'withdrawn\') as withdrawn')
+                    DB::raw('sum(cash) filter (where status = \'active\') as active'),
+                    DB::raw('sum(cash) filter (where status = \'trouble\') as block'),
+                    DB::raw('sum(cash) filter (where status = \'withdrawn\') as withdrawn')
                 )
-                ->whereMonth('created_at', $this->carbonMonth($request))
-                ->whereYear('created_at', $this->carbonYear($request))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
                 ->get(),
             'count' => DB::table('bks')
                 ->select(
@@ -124,8 +168,8 @@ class StatisticsController extends Controller
                     DB::raw('count(id) filter ( where status = \'trouble\') as block'),
                     DB::raw('count(id) filter ( where status = \'withdrawn\') as withdrawn')
                 )
-                ->whereMonth('created_at', $this->carbonMonth($request))
-                ->whereYear('created_at', $this->carbonYear($request))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
                 ->get()
         ];
     }

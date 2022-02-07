@@ -42,6 +42,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\UserController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\UserController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [\App\Http\Controllers\UserController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('statistics')->name('statistics.')->group(function () {

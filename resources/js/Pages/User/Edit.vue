@@ -11,7 +11,7 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
                 <jet-form-section @submitted="createUser">
                     <template #title>
-                        Создание нового пользователя
+                        Редактирование пользователя
                     </template>
 
                     <template #description>
@@ -30,14 +30,9 @@
                             <jet-input-error :message="form.errors.email" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="password" value="Пароль" />
+                            <jet-label for="password" value="Новый пароль" />
                             <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" ref="password" />
                             <jet-input-error :message="form.errors.password" class="mt-2" />
-                        </div>
-                        <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="password_confirmation" value="Подтверждение пароля" />
-                            <jet-input id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
-                            <jet-input-error :message="form.errors.password_confirmation" class="mt-2" />
                         </div>
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="role" value="Роль" />
@@ -87,10 +82,9 @@ export default defineComponent({
     data() {
         return {
             form: this.$inertia.form({
-                name: null,
-                email: null,
+                name: this.data.name,
+                email: this.data.email,
                 password: null,
-                password_confirmation: '',
                 role: 'user',
             }),
         }
@@ -98,8 +92,8 @@ export default defineComponent({
 
     methods: {
         createUser() {
-            this.form.post(route('user.store'), {
-                errorBag: 'createUser',
+            this.form.put(route('user.update', this.data.id), {
+                errorBag: 'updateUser',
                 onSuccess: () => this.form.reset(),
                 onError: () => {
                     if (this.form.errors.name) {
@@ -122,6 +116,10 @@ export default defineComponent({
             })
         },
     },
+
+    props: {
+        data: Object
+    }
 })
 </script>
 

@@ -18,6 +18,7 @@ class Bks extends Model
     const STATUSES = [
         'new' => 'Новый',
         'waiting' => 'Ожидание',
+        'active' => 'Активный',
         'in_work' => 'В работе',
         'on_verification' => 'На верификации',
         'on_withdrawn' => 'На выводе',

@@ -126,7 +126,8 @@ class BkController extends Controller
         $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments'])
             ->where('id', $id)
             ->first();
-        $payments = Payments::with(['country', 'type', 'bk']);
+        $payments = Payments::with(['country', 'type', 'bk'])
+            ->where('status', 'block');
         if (! Auth::user()->hasRole(['administrator'])) {
             $payments->whereHas('bk', function($query){
                 $query->where('responsible', Auth::id());

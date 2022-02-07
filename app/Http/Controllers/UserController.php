@@ -6,10 +6,15 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Models\User;
 use App\Resources\User\UsersResources;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Fortify\Rules\Password;
+use Laravel\Jetstream\Jetstream;
 
 class UserController extends Controller
 {
@@ -36,14 +41,60 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @param CreateNewUser $creator
-     * @return JsonResponse
+     * @return RedirectResponse
      * @throws ValidationException
      */
-    public function store(Request $request, CreateNewUser $creator): JsonResponse
+    public function store(Request $request, CreateNewUser $creator): RedirectResponse
     {
         $builder = $creator->create($request->all());
         $builder->assignRole($request->input('role'));
-        return new JsonResponse('', 200);
+        return redirect()->back();
+    }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @return Response
+     */
+    public function edit(int $id, Request $request): Response
+    {
+        $user = User::find($id);
+        return Inertia::render('User/Edit', [
+            'data' => $user
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws ValidationException
+     */
+    public function update(int $id, Request $request): RedirectResponse
+    {
+        $user = User::find($id);
+        $user->name = $request->input('name');
+        if ($user->email != $request->input('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->save();
+        if (! $user->hasRole($request->input('role'))) {
+            $user->assignRole($request->input('role'));
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * @param int $id
+     * @return RedirectResponse
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        User::destroy([$id]);
+        return redirect()->back();
     }
 
 }
