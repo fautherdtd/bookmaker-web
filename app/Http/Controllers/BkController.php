@@ -185,7 +185,7 @@ class BkController extends Controller
         }
 
         // Increment Payment
-        if ($this->transactionPaymentBK($request, $model->currency)) {
+        if ($this->transactionPaymentBK($request, $model->currency) && $request->input('status') === 'withdrawn') {
             $sum = 0;
             foreach ($request->input('transactions') as $transaction) {
                 $paymentModel = Payments::whereId($transaction['payment_id'])
