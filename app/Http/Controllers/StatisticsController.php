@@ -29,22 +29,28 @@ class StatisticsController extends Controller
      */
     public function index(\Illuminate\Http\Request $request): Response
     {
-        $statistics = DB::table('statistics')
+        $statistics = DB::table('bks as bk')
+            ->join('currencies as c', 'bk.currency', '=', 'c.code')
             ->select(
-                'status',
-                DB::raw('(SELECT SUM(cash) FROM statistics as b WHERE b.status = statistics.status) as cash'),
-                DB::raw('(SELECT count(status) FROM statistics as c WHERE c.status = statistics.status) as count'),
+                DB::raw('bk.status'),
+                DB::raw('count(bk.id) as handed'),
+                DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                DB::raw('count(bk.status)'),
             )
-            ->where('responsible', Auth::id())
-            ->whereMonth('created_at', $this->carbonMonth($request))
-            ->whereYear('created_at', $this->carbonYear($request))
-            ->groupBy('status')
+            ->where('bk.responsible', Auth::id())
+            ->whereMonth('bk.created_at', $this->carbonMonth($request))
+            ->whereYear('bk.created_at', $this->carbonYear($request))
+            ->groupBy('bk.status')
             ->get();
-        $common = DB::table('statistics')
-            ->select(DB::raw('sum(cash) as cash, count(id) as count'))
-            ->where('responsible', Auth::id())
-            ->whereMonth('created_at', $this->carbonMonth($request))
-            ->whereYear('created_at', $this->carbonYear($request))
+        $common = DB::table('bks as bk')
+            ->join('currencies as c', 'bk.currency', '=', 'c.code')
+            ->select(
+                DB::raw('count(bk.id) as count'),
+                DB::raw('sum(CASE WHEN bk.currency != \'EUR\' THEN floor(bk.sum / c.exchange) WHEN bk.currency = \'EUR\' THEN bk.sum END) as cash')
+            )
+            ->where('bk.responsible', Auth::id())
+            ->whereMonth('bk.created_at', $this->carbonMonth($request))
+            ->whereYear('bk.created_at', $this->carbonYear($request))
             ->get();
         return Inertia::render('Statistics', [
             'statistics' => new StatisticsResources($statistics),
@@ -94,18 +100,22 @@ class StatisticsController extends Controller
                 (int) $request->input('responsible.year')
             ) : Carbon::now()->year;
 
-        return DB::table('statistics')
-            ->leftJoin('users', 'users.id', '=', 'statistics.responsible')
+        return DB::table('bks as bk')
+            ->join('users as u', 'u.id', '=', 'bk.responsible')
+            ->join('currencies as c', 'bk.currency', '=', 'c.code')
             ->select(
-                DB::raw('count(statistics.id) as handed'),
-                DB::raw('sum(statistics.cash) as cash'),
-                DB::raw('COUNT((SELECT statistics.status FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawn'),
-                DB::raw('SUM((SELECT cash FROM statistics as stat WHERE stat.status = \'withdrawn\' AND stat.responsible = statistics.responsible)) as withdrawnCash'),
-                DB::raw('users.name'),
+                DB::raw('u.name'),
+                DB::raw('count(bk.id) as handed'),
+                DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                DB::raw('count(bk.id) filter ( where status = \'withdrawn\' ) as withdrawn'),
+                DB::raw('sum(CASE
+                    WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum / c.exchange)
+                    WHEN currency = \'EUR\' AND status = \'withdrawn\' THEN sum END
+                ) as withdrawnCash'),
             )
-            ->whereMonth('statistics.created_at', $month)
-            ->whereYear('statistics.created_at', $year)
-            ->groupBy('users.name')
+            ->whereMonth('bk.created_at', $month)
+            ->whereYear('bk.created_at', $year)
+            ->groupBy('u.name')
             ->get();
     }
 
@@ -124,16 +134,17 @@ class StatisticsController extends Controller
                 (int) $request->input('responsible.year')
             ) : Carbon::now()->year;
         return new DashboardCommonResources(
-            DB::table('statistics as s')
-            ->select(
-                DB::raw('count(s.id) as handed'),
-                DB::raw('sum(s.cash) as cash'),
-                DB::raw('count(s.id) filter ( where s.status = \'withdrawn\') as withdrawn'),
-                DB::raw('sum(s.cash) filter ( where s.status = \'withdrawn\') as withdrawncash'),
-            )
-            ->whereMonth('s.created_at', $month)
-            ->whereYear('s.created_at', $year)
-            ->get());
+            DB::table('bks as bk')
+                ->join('currencies as c', 'bk.currency', '=', 'c.code')
+                ->select(
+                    DB::raw('count(bk.id) as handed'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                    DB::raw('count(bk.id) filter ( where bk.status = \'withdrawn\' ) as withdrawn'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' AND status = \'withdrawn\' THEN floor(sum) END) as withdrawnCash'),
+                )
+                ->whereMonth('bk.created_at', $month)
+                ->whereYear('bk.created_at', $year)
+                ->get());
     }
 
     /**
@@ -152,14 +163,15 @@ class StatisticsController extends Controller
             ) : Carbon::now()->year;
         return [
             'cash' => DB::table('bks')
+                ->join('currencies as c', 'bks.currency', '=', 'c.code')
                 ->select(
-                    DB::raw('sum(sum) as all'),
-                    DB::raw('sum(sum) filter (where status = \'active\') as active'),
-                    DB::raw('sum(sum) filter (where status = \'trouble\') as block'),
-                    DB::raw('sum(sum) filter (where status = \'withdrawn\') as withdrawn')
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as all'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' AND status = \'active\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' AND status = \'active\' THEN floor(sum) END) as active'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' AND status = \'trouble\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' AND status = \'trouble\' THEN floor(sum) END) as trouble'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' AND status = \'withdrawn\' THEN floor(sum) END) as withdrawn')
                 )
-                ->whereMonth('created_at', $month)
-                ->whereYear('created_at', $year)
+                ->whereMonth('bks.created_at', $month)
+                ->whereYear('bks.created_at', $year)
                 ->get(),
             'count' => DB::table('bks')
                 ->select(

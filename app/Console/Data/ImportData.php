@@ -52,7 +52,7 @@ class ImportData extends Command
                 break;
             }
             foreach ($body as $data) {
-                DB::transaction(function () use ($data) {
+                DB::transaction(function () use ($data, $carbon) {
                     // БК
                     $result = DB::table('bks')->insertOrIgnore([
                         'country_id' => $data['drop']['country_id'],
@@ -66,7 +66,9 @@ class ImportData extends Command
                         'bet_id' => $data['bet_id'],
                         'sum' => $data['cash'],
                         'currency' => $data['currency'],
-                        'id_external' => $data['id']
+                        'id_external' => $data['id'],
+                        'created_at' => $carbon->now(),
+                        'updated_at' => $carbon->now(),
                     ]);
                     // Платежки
                     if (!empty($data['payments']) && $result !== 0) {
@@ -93,7 +95,8 @@ class ImportData extends Command
                                 'drop' => $data['drop']['name'],
                                 'bk_id' => $idBK,
                                 'histories' => json_encode($transactions, true),
-                                'created_at' => $payments['created_at']
+                                'created_at' => $payments['created_at'],
+                                'updated_at' => $payments['created_at'],
                             ]);
                         }
                     }
