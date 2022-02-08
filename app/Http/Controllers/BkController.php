@@ -185,20 +185,22 @@ class BkController extends Controller
         }
 
         // Increment Payment
-        if ($this->transactionPaymentBK($request, $model->currency) && $request->input('status') === 'withdrawn') {
-            $sum = 0;
-            foreach ($request->input('transactions') as $transaction) {
-                $paymentModel = Payments::whereId($transaction['payment_id'])
-                    ->with(['type', 'country'])
-                    ->first();
-                $sum += $transaction['sum'];
-                $actions[] = ['Выведено на платежку '. implode(' ', [
-                        $paymentModel['country']['name'],
-                        $paymentModel['drop'],
-                        $paymentModel['type']['title'],
-                    ]) . ' - сумма '. $transaction['sum']];
+        if ($request->input('status') === 'withdrawn') {
+            if ($this->transactionPaymentBK($request, $model->currency)) {
+                $sum = 0;
+                foreach ($request->input('transactions') as $transaction) {
+                    $paymentModel = Payments::whereId($transaction['payment_id'])
+                        ->with(['type', 'country'])
+                        ->first();
+                    $sum += $transaction['sum'];
+                    $actions[] = ['Выведено на платежку '. implode(' ', [
+                            $paymentModel['country']['name'],
+                            $paymentModel['drop'],
+                            $paymentModel['type']['title'],
+                        ]) . ' - сумма '. $transaction['sum']];
+                }
+                $model->sum = $model->sum - $sum;
             }
-            $model->sum = $model->sum - $sum;
         }
 
         if ($stories = $this->storeBkStories($id, $actions)) {
