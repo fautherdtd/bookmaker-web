@@ -100,10 +100,6 @@ class UserController extends Controller
             ->update([
                 'responsible' => null
             ]);
-        // Delete statistics
-        Statistics::where('responsible', $id)
-            ->delete();
-
         User::destroy([$id]);
         return redirect()->back();
     }

@@ -37,6 +37,7 @@
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="role" value="Роль" />
                             <select name="role" id="role" v-model="form.role">
+                                <option value="null" selected disabled>Выбрать роль</option>
                                 <option value="user">Сотрудник</option>
                                 <option value="administrator">Администратор</option>
                             </select>

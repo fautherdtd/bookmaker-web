@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\StatisticsController;
 use App\Models\Bks as BkModel;
 use App\Models\Payments;
 use App\Models\Pivot\BkStories;
@@ -91,17 +90,11 @@ class BkController extends Controller
      */
     public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
     {
-        DB::beginTransaction();
         BkModel::where('id', (int) $request->input('id'))
             ->update([
                 'responsible' => (int) $request->input('responsible'),
                 'status' => 'waiting'
             ]);
-        if (! (new StatisticsController())->create($request->input('id'))) {
-            DB::rollBack();
-            return response()->json('Ошибка в статистике.', 500);
-        }
-        DB::commit();
         return response()->json('Ответственный добавлен.');
     }
 
@@ -207,10 +200,6 @@ class BkController extends Controller
             return redirect()->back()->withErrors($stories);
         }
         $model->save();
-        // Update statistics for BK
-        if (! (new StatisticsController())->update($id)) {
-            return redirect()->back(500)->withErrors($stories);
-        }
         return redirect()->back();
     }
 

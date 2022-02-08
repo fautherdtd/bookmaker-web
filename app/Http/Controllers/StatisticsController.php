@@ -185,37 +185,4 @@ class StatisticsController extends Controller
                 ->get()
         ];
     }
-
-    /**
-     * @param int $bkID
-     * @return bool
-     */
-    public function create(int $bkID): bool
-    {
-        $bk = Bks::find($bkID);
-        $model = new StatisticsModel;
-        $model->responsible = $bk->responsible;
-        $model->status = $bk->status;
-        $model->bk_id = $bkID;
-        $model->cash = $this->converterCurrency($bk->currency, $bk->sum);
-        return $model->save();
-    }
-
-    /**
-     * @param int $bkID
-     * @return bool
-     */
-    public function update(int $bkID): bool
-    {
-        $bk = Bks::find($bkID);
-        $model = StatisticsModel::where([
-            ['bk_id', $bkID],
-            ['responsible', $bk->responsible]
-        ])->first();
-        $model->responsible = $bk->responsible;
-        $model->status = $bk->status;
-        $model->bk_id = $bkID;
-        $model->cash = $this->converterCurrency($bk->currency, $bk->sum);
-        return $model->save();
-    }
 }
