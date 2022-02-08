@@ -35,7 +35,7 @@
                 </el-col>
                 <el-col :span="8">
                     <v-select
-                        class=" mb-2 bg-white"
+                        class="mb-2 bg-white"
                         placeholder="БК"
                         v-model="this.filter.bet_id"
                         :reduce="(option) => option.id"
@@ -44,7 +44,7 @@
                 </el-col>
                 <el-col :span="8">
                     <v-select
-                        class="mr-3  bg-white"
+                        class="mr-3 bg-white"
                         placeholder="Дроповод"
                         v-model="this.filter.drop_guide"
                         :reduce="(option) => option.code"
@@ -129,12 +129,10 @@ import {
     Currencies,
     DropGuides, Responsible,
     Statuses,
+    Drops,
     TypePayments,
     Common
-} from '../Mixins/Filters'
-import pickBy from 'lodash/pickBy'
-import throttle from 'lodash/throttle'
-import mapValues from 'lodash/mapValues'
+} from '@/Mixins/Filters'
 
 export default defineComponent({
     components: {
@@ -150,6 +148,7 @@ export default defineComponent({
         TypePayments,
         DropGuides,
         Bets,
+        Drops,
         Countries,
         Responsible,
         Common

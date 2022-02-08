@@ -76,7 +76,7 @@
                                     id="responsibleID"
                                     class="mr-2"
                                 v-on:change="changeSaveDistribution($event, scope.row.id)">
-                                <option value="" disabled selected>Сотрудник</option>
+                                <option value="null" disabled selected>Сотрудник</option>
                                 <option :value="user.id" v-for="user in responsibleSelect">
                                     {{ user.label }}
                                 </option>
@@ -109,9 +109,10 @@ import {
     Common,
     Countries,
     DropGuides,
+    Drops,
     Responsible,
     TypePayments
-} from "../../Mixins/Filters";
+} from "@/Mixins/Filters";
 
 export default defineComponent({
     components: {
@@ -127,7 +128,8 @@ export default defineComponent({
         Bets,
         Countries,
         Responsible,
-        Common
+        Common,
+        Drops
     ],
     data: function () {
         return {
@@ -139,6 +141,7 @@ export default defineComponent({
     },
     methods: {
         changeSaveDistribution: function (event, scopeID) {
+
             this.responsible.id = event.target.value
             this.responsible.btn = scopeID
         },

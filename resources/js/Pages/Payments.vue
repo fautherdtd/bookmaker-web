@@ -22,7 +22,7 @@
                             :options="countriesSelect">
                         </v-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="8">
                         <v-select
                             class="mr-3 bg-white"
                             placeholder="Дроп"
@@ -134,13 +134,14 @@ import {
     Bets,
     BkList,
     Common,
+    Drops,
     Countries,
     Currencies,
     DropGuides,
     Responsible,
     Statuses,
     TypePayments
-} from "../Mixins/Filters";
+} from "@/Mixins/Filters";
 
 export default defineComponent({
     components: {
@@ -158,7 +159,8 @@ export default defineComponent({
         Bets,
         Countries,
         Responsible,
-        Common
+        Common,
+        Drops
     ],
     data: function () {
         return {
@@ -175,8 +177,7 @@ export default defineComponent({
         },
     },
     props: {
-        data: Object,
-        filter: Object
+        data: Object
     }
 })
 </script>

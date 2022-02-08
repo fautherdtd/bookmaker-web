@@ -18,6 +18,22 @@ export const Currencies = {
     }
 };
 
+export const Drops = {
+    computed: {
+        dropsSelect: function () {
+            return this.pivot.drops.map(function(value, key) {
+                return {
+                    code: value,
+                    label: value
+                }
+            })
+        }
+    },
+    props: {
+        pivot: Object
+    }
+};
+
 export const BkList = {
     computed: {
         bkSelect: function () {
@@ -33,7 +49,7 @@ export const BkList = {
     props: {
         pivot: Object
     }
-}
+};
 
 export const TypePayments = {
     computed: {
@@ -49,7 +65,7 @@ export const TypePayments = {
     props: {
         pivot: Object
     }
-}
+};
 
 export const Statuses = {
     computed: {
@@ -66,7 +82,7 @@ export const Statuses = {
     props: {
         pivot: Object
     }
-}
+};
 
 export const Countries = {
     computed: {
@@ -116,24 +132,6 @@ export const DropGuides = {
     }
 }
 
-export const Drops = {
-    computed: {
-        dropsSelect: function () {
-            console.log(this.pivot.drops)
-            let drops = this.pivot.drops
-            return Object.keys(drops).map(function(item) {
-                return {
-                    code: item,
-                    label: item
-                }
-            })
-        }
-    },
-    props: {
-        pivot: Object
-    }
-}
-
 export const Responsible = {
     computed: {
         responsibleSelect: function () {
@@ -174,7 +172,6 @@ export const Common = {
         filter: {
             deep: true,
             handler: throttle(function () {
-                console.log(this.filter)
                 this.$inertia.get(route(route().current()),
                     pickBy(this.filter),
                     { preserveState: true }
