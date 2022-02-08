@@ -204,13 +204,11 @@ class BkController extends Controller
         if ($stories = $this->storeBkStories($id, $actions)) {
             return redirect()->back()->withErrors($stories);
         }
+        $model->save();
         // Update statistics for BK
         if (! (new StatisticsController())->update($id)) {
             return redirect()->back(500)->withErrors($stories);
         }
-
-
-        $model->save();
         return redirect()->back();
     }
 

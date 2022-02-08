@@ -163,21 +163,24 @@ export default defineComponent({
             });
         },
         editBk() {
-            let sumTrans = 0;
-            let paymentNULL = true;
-            this.form.transactions.map(function (item) {
-                sumTrans += parseInt(item.sum)
-                if (item.payment_id === null) paymentNULL = false
-                return item
-            });
-            if (! paymentNULL) {
-                ElMessage.error('Платежка не выбрана для вывода.');
-                return
+            if (this.form.status === 'withdrawn') {
+                let sumTrans = 0;
+                let paymentNULL = true;
+                this.form.transactions.map(function (item) {
+                    sumTrans += parseInt(item.sum)
+                    if (item.payment_id === null) paymentNULL = false
+                    return item
+                });
+                if (! paymentNULL) {
+                    ElMessage.error('Платежка не выбрана для вывода.');
+                    return
+                }
+                if (sumTrans > this.form.sum) {
+                    ElMessage.error('Общая сумма вывода больше суммы БК.');
+                    return
+                }
             }
-            if (sumTrans > this.form.sum) {
-                ElMessage.error('Общая сумма вывода больше суммы БК.');
-                return
-            }
+
             this.form.put(route('bk.update', this.item.data.id), {
                 errorBag: 'editBk',
                 preserveScroll: true,
