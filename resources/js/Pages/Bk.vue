@@ -13,54 +13,64 @@
             </div>
         </template>
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex">
+            <el-row class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <el-col :span="8">
                     <v-select
-                        class="mr-3 w-48 bg-white"
+                        class="mr-3 mb-2 bg-white"
                         placeholder="Страна"
                         v-model="this.filter.country_id"
                         :reduce="(option) => option.id"
                         name="country_id"
                         :options="countriesSelect">
                     </v-select>
+                </el-col>
+                <el-col :span="8">
                     <v-select
-                        class="mr-3 w-48 bg-white"
+                        class="mr-3 mb-2 bg-white"
                         placeholder="Дроп"
                         v-model="this.filter.drop"
                         :reduce="(option) => option.code"
                         :options="dropsSelect">
                     </v-select>
+                </el-col>
+                <el-col :span="8">
                     <v-select
-                        class="mr-3 w-48 bg-white"
+                        class=" mb-2 bg-white"
                         placeholder="БК"
                         v-model="this.filter.bet_id"
                         :reduce="(option) => option.id"
                         :options="betsSelect">
                     </v-select>
+                </el-col>
+                <el-col :span="8">
                     <v-select
-                        class="mr-3 w-48 bg-white"
+                        class="mr-3  bg-white"
                         placeholder="Дроповод"
                         v-model="this.filter.drop_guide"
                         :reduce="(option) => option.code"
                         :options="dropGuidesSelect">
                     </v-select>
+                </el-col>
+                <el-col :span="8">
                     <v-select
-                        class="mr-3 w-48 bg-white"
+                        class="mr-3  bg-white"
                         placeholder="Статус"
                         v-model="this.filter.status"
                         :reduce="(option) => option.code"
                         :options="statusesSelect">
                     </v-select>
+                </el-col>
+                <el-col :span="8">
                     <v-select
                         v-if="$page.props.permission.isAdmin"
-                        class="w-48 bg-white"
+                        class=" bg-white"
                         placeholder="Ответственный"
                         v-model="this.filter.responsible"
                         :reduce="(option) => option.id"
                         :options="responsibleSelect">
                     </v-select>
-                </div>
-            </div>
+                </el-col>
+            </el-row>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6 flex justify-between">
                 <label for="disable-bk">
                     <input type="checkbox" id="disable-bk" v-model="this.filter.withdrawn">

@@ -9,6 +9,8 @@ use App\Models\Pivot\BkStories;
 use App\Models\User;
 use App\Resources\BK\BkItemResources;
 use App\Resources\BK\BksResources;
+use App\Resources\Payments\PaymentResources;
+use App\Resources\Payments\Selects\PaymentSelectResources;
 use App\Resources\Payments\Selects\PaymentSelectsResources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -127,7 +129,7 @@ class BkController extends Controller
             ->where('id', $id)
             ->first();
         $payments = Payments::with(['country', 'type', 'bk'])
-            ->where('status', 'block');
+            ->where('status', '!=', 'block');
         if (! Auth::user()->hasRole(['administrator'])) {
             $payments->whereHas('bk', function($query){
                 $query->where('responsible', Auth::id());
@@ -181,30 +183,55 @@ class BkController extends Controller
             $model->responsible = $request->input('responsible');
             $actions[] = ['Был изменен ответственный.'];
         }
+
+        // Increment Payment
+        if ($this->transactionPaymentBK($request, $model->currency)) {
+            $sum = 0;
+            foreach ($request->input('transactions') as $transaction) {
+                $paymentModel = Payments::whereId($transaction['payment_id'])
+                    ->with(['type', 'country'])
+                    ->first();
+                $sum += $transaction['sum'];
+                $actions[] = ['Выведено на платежку '. implode(' ', [
+                        $paymentModel['country']['name'],
+                        $paymentModel['drop'],
+                        $paymentModel['type']['title'],
+                    ]) . ' - сумма '. $transaction['sum']];
+            }
+            $model->sum = $model->sum - $sum;
+        }
+
         if ($stories = $this->storeBkStories($id, $actions)) {
             return redirect()->back()->withErrors($stories);
         }
         // Update statistics for BK
         if (! (new StatisticsController())->update($id)) {
-            return redirect()->back()->withErrors($stories);
+            return redirect()->back(500)->withErrors($stories);
         }
-        // Increment Payment
-        if (
-            $request->filled('transactions.sum') &&
-            $request->filled('transactions.payment_id')
-        ) {
-            if (! (new PaymentController())->incrementSum(
-                $request->input('transactions.payment_id'),
-                $request->input('transactions.sum'),
-                $model->currency
-            )) {
-                return redirect()->back()->withErrors($stories);
-            }
-            $model->sum = $model->sum - $request->input('transactions.sum');
-            $actions[] = ['Деньги.'];
-        }
+
+
         $model->save();
         return redirect()->back();
+    }
+
+    /**
+     * @param Request $request
+     * @param string $currencies
+     * @return bool|\Illuminate\Http\RedirectResponse
+     */
+    public function transactionPaymentBK(Request $request, string $currencies)
+    {
+        if ($request->has('transactions')) {
+            foreach ($request->input('transactions') as $transaction) {
+                if (! (new PaymentController())->incrementSum(
+                    (int) $transaction['payment_id'],
+                    (int) $transaction['sum'],
+                    $currencies
+                )) return redirect()->back(500);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

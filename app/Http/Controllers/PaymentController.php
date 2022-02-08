@@ -65,13 +65,16 @@ class PaymentController extends Controller
 
     /**
      * @param int $id
-     * @return Response
+     * @return RedirectResponse|Response
      */
-    public function edit(int $id): Response
+    public function edit(int $id)
     {
         $builder = Payments::with(['country', 'type', 'bk', 'bk.bet'])
             ->where('id', $id)
             ->first();
+        if ($builder->external) {
+            return redirect()->back();
+        }
         return Inertia::render('Payment/Edit', [
             'item' => new PaymentResources($builder),
             'pivot' => [
@@ -124,6 +127,7 @@ class PaymentController extends Controller
             'currency' => $request->input('currency'),
             'status' => $request->input('status'),
             'drop' => $bk->drop,
+            'external' => false,
             'country_id' => $bk->country_id,
         ]);
         return redirect()->back();

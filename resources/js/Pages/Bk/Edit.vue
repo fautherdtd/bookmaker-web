@@ -69,21 +69,31 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-span-6 sm:col-span-4 flex" v-if="form.status === 'withdrawn'">
-                            <div class="mr-3">
-                                <jet-label for="transaction-sum" value="Сумма" />
-                                <jet-input id="transaction-sum" type="text" class="mt-1 block w-full"
-                                           v-model="form.transactions.sum"/>
-                            </div>
-                            <div>
-                                <jet-label for="transaction-payment" value="Платежка" />
-                                <select name="transaction-payment" id="transaction-payment" class="w-60"
-                                        v-model="form.transactions.payment_id">
-                                    <option value="null" disabled>Платежки</option>
-                                    <option :value="payment.id" v-for="payment in this.payments.data">
-                                        {{ payment.label }}
-                                    </option>
-                                </select>
+                        <div class="col-span-6 sm:col-span-4 bg-gray-50 p-3" v-if="form.status === 'withdrawn'">
+                            <template v-for="payment in this.form.transactions">
+                                <div class="col-span-6 sm:col-span-4 flex">
+                                    <div class="mr-3">
+                                        <jet-label for="transaction-sum" value="Сумма" required />
+                                        <jet-input id="transaction-sum" type="number"
+                                                   class="mt-1 block w-full"
+                                                   v-model="payment.sum" :max="form.sum"/>
+                                    </div>
+                                    <div>
+                                        <jet-label for="transaction-payment" value="Платежка" />
+                                        <select name="transaction-payment" id="transaction-payment" required class="w-60"
+                                                v-model="payment.payment_id">
+                                            <option value="null" disabled>Платежки</option>
+                                            <option :value="payment.id" v-for="payment in this.payments.data">
+                                                {{ payment.label }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="col-span-6 sm:col-span-4 mt-4">
+                                <el-button type="primary" @click="addPayments">
+                                    Добавить <i class="lni lni-circle-plus"></i>
+                                </el-button>
                             </div>
                         </div>
                     </template>
@@ -136,20 +146,42 @@ export default defineComponent({
                 status: this.item.data.status.key,
                 comment: null,
                 responsible: this.item.data.responsible.id,
-                transactions: {
-                    sum: null,
-                    payment_id: null
-                }
+                transactions: [
+                    {
+                        sum: null,
+                        payment_id: null
+                    }
+                ]
             }),
         }
     },
     methods: {
+        addPayments: function () {
+            this.form.transactions.push({
+                sum: null,
+                payment_id: null
+            });
+        },
         editBk() {
+            let sumTrans = 0;
+            let paymentNULL = true;
+            this.form.transactions.map(function (item) {
+                sumTrans += parseInt(item.sum)
+                if (item.payment_id === null) paymentNULL = false
+                return item
+            });
+            if (! paymentNULL) {
+                ElMessage.error('Платежка не выбрана для вывода.');
+                return
+            }
+            if (sumTrans > this.form.sum) {
+                ElMessage.error('Общая сумма вывода больше суммы БК.');
+                return
+            }
             this.form.put(route('bk.update', this.item.data.id), {
                 errorBag: 'editBk',
                 preserveScroll: true,
                 onSuccess: () => {
-                    this.form.reset()
                     ElMessage.success('БК отредактирован.');
                 },
                 onError: (r) => {

@@ -24,7 +24,8 @@ class Payments extends Model
         'status',
         'bk_id',
         'country_id',
-        'drop'
+        'drop',
+        'external'
     ];
 
     /**

@@ -119,6 +119,7 @@ export const DropGuides = {
 export const Drops = {
     computed: {
         dropsSelect: function () {
+            console.log(this.pivot.drops)
             let drops = this.pivot.drops
             return Object.keys(drops).map(function(item) {
                 return {

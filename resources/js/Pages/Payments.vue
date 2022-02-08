@@ -12,37 +12,45 @@
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex">
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Страна"
-                        v-model="this.filter.country_id"
-                        :reduce="(option) => option.id"
-                        :options="countriesSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Дроп"
-                        v-model="this.filter.drop"
-                        :reduce="(option) => option.code"
-                        :options="dropsSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Тип платежки"
-                        v-model="this.filter.type_id"
-                        :reduce="(option) => option.id"
-                        :options="typePaymentsSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Статус"
-                        v-model="this.filter.status"
-                        :reduce="(option) => option.code"
-                        :options="statusesSelect">
-                    </v-select>
+                <el-row>
+                    <el-col :span="8">
+                        <v-select
+                            class="mr-3 mb-2 bg-white"
+                            placeholder="Страна"
+                            v-model="this.filter.country_id"
+                            :reduce="(option) => option.id"
+                            :options="countriesSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="6">
+                        <v-select
+                            class="mr-3 bg-white"
+                            placeholder="Дроп"
+                            v-model="this.filter.drop"
+                            :reduce="(option) => option.code"
+                            :options="dropsSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="8">
+                        <v-select
+                            class="bg-white"
+                            placeholder="Тип платежки"
+                            v-model="this.filter.type_id"
+                            :reduce="(option) => option.id"
+                            :options="typePaymentsSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="6">
+                        <v-select
+                            class="mr-3 bg-white"
+                            placeholder="Статус"
+                            v-model="this.filter.status"
+                            :reduce="(option) => option.code"
+                            :options="statusesSelect">
+                        </v-select>
+                    </el-col>
                     <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
-                </div>
+                </el-row>
             </div>
             <hr class="mb-6 mt-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">
@@ -63,7 +71,7 @@
                                 <el-button type="primary" v-on:click="getShowItem(scope.row.id)">
                                     <i class="lni lni-eye"></i>
                                 </el-button>
-                                <Link :href="route('payment.edit', scope.row.id)">
+                                <Link :href="route('payment.edit', scope.row.id)" v-if="!scope.row.external">
                                     <el-button type="primary">
                                         <i class="lni lni-pencil-alt"></i>
                                     </el-button>
@@ -98,7 +106,7 @@
                     </div>
                 </div>
                 <template #footer>
-                  <span class="dialog-footer">
+                  <div class="bg-gray-50 p-6">
                       <div class="flex justify-between text-left">
                           <div class="content">
                               <p><b>Сумма:</b> {{ this.showItem['cash'] }}</p>
@@ -109,7 +117,7 @@
                               <p><b>Тип платежки:</b> {{ this.showItem['type']['title'] }}</p>
                           </div>
                       </div>
-                  </span>
+                  </div>
                 </template>
             </el-dialog>
         </div>

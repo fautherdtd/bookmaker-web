@@ -14,38 +14,48 @@
         </template>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex">
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Страна"
-                        v-model="this.filter.country_id"
-                        :reduce="(option) => option.id"
-                        name="country_id"
-                        :options="countriesSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Дроп"
-                        v-model="this.filter.drop"
-                        :reduce="(option) => option.code"
-                        :options="dropsSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="БК"
-                        v-model="this.filter.bet_id"
-                        :reduce="(option) => option.id"
-                        :options="betsSelect">
-                    </v-select>
-                    <v-select
-                        class="mr-3 w-48 bg-white"
-                        placeholder="Дроповод"
-                        v-model="this.filter.drop_guide"
-                        :reduce="(option) => option.code"
-                        :options="dropGuidesSelect">
-                    </v-select>
-                    <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
-                </div>
+                <el-row>
+                    <el-col :span="8">
+                        <v-select
+                            class="mr-3 bg-white"
+                            placeholder="Страна"
+                            v-model="this.filter.country_id"
+                            :reduce="(option) => option.id"
+                            name="country_id"
+                            :options="countriesSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="6">
+                        <v-select
+                            class="mr-3 bg-white"
+                            placeholder="Дроп"
+                            v-model="this.filter.drop"
+                            :reduce="(option) => option.code"
+                            :options="dropsSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="5">
+                        <v-select
+                            class="bg-white mr-2"
+                            placeholder="БК"
+                            v-model="this.filter.bet_id"
+                            :reduce="(option) => option.id"
+                            :options="betsSelect">
+                        </v-select>
+                    </el-col>
+                    <el-col :span="5">
+                        <v-select
+                            class="bg-white"
+                            placeholder="Дроповод"
+                            v-model="this.filter.drop_guide"
+                            :reduce="(option) => option.code"
+                            :options="dropGuidesSelect">
+                        </v-select>
+                    </el-col>
+                    <div class="flex mt-2 mb-2 justify-end">
+                        <button class="underline" @click="resetFilterTable">Сбросить фильтры</button>
+                    </div>
+                </el-row>
             </div>
             <hr>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5">

@@ -15,6 +15,7 @@ class CreateBksTable extends Migration
     {
         Schema::create('bks', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('id_external')->unique();
             $table->bigInteger('country_id');
             $table->string('drop');
             $table->string('email');

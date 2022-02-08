@@ -44,8 +44,7 @@ class ImportData extends Command
      */
     public function handle(Carbon $carbon)
     {
-//        $date = $carbon->now()->toDateString();
-        $date = '2022-01-03';
+        $date = $carbon->now()->toDateString();
         for ($page = 1;/*  */; $page++) {
             $body = $this->request($date, $page);
             if (empty($body)) {
@@ -55,32 +54,34 @@ class ImportData extends Command
             foreach ($body as $data) {
                 DB::transaction(function () use ($data) {
                     // БК
-                    $bk = DB::table('bks')->insertGetId([
+                    $result = DB::table('bks')->insertOrIgnore([
                         'country_id' => $data['drop']['country_id'],
                         'drop' => $data['drop']['name'],
                         'email' => $data['drop']['login_mail'],
                         'password' => $data['drop']['password_mail'],
                         'address' => $data['drop']['address'],
                         'document' => $data['drop']['src_document'],
-                        'info' => $data['add_info'],
+                        'info' => $data['add_info'] ?? 'Нет информации.',
                         'drop_guide' => $data['drop']['drop_guide']['name'],
                         'bet_id' => $data['bet_id'],
                         'sum' => $data['cash'],
-                        'currency' => $data['currency']
+                        'currency' => $data['currency'],
+                        'id_external' => $data['id']
                     ]);
                     // Платежки
-                    if (!empty($data['payments'])) {
+                    if (!empty($data['payments']) && $result !== 0) {
+                        $idBK = DB::getPdo()->lastInsertId();
                         foreach ($data['payments'] as $payments) {
                             // Транкзации
                             $transactions = [];
                             if (!empty($payments['transactions'])) {
                                 foreach ($payments['transactions'] as $transaction) {
-                                    array_push($transactions, implode(' ', [
+                                    $transactions[] = implode(' ', [
                                         date('d.m.Y', strtotime($transaction['created_at'])) . ' - ',
                                         $transaction['operation'] === 'decrement' ?
                                             'Внесение на БК ' : 'Вывод на Платежку ',
                                         $transaction['sum'] . $transaction['currency']
-                                    ]));
+                                    ]);
                                 }
                             }
                             DB::table('payments')->insert([
@@ -90,7 +91,7 @@ class ImportData extends Command
                                 'currency' => $payments['currency'],
                                 'status' => $payments['status'],
                                 'drop' => $data['drop']['name'],
-                                'bk_id' => $bk,
+                                'bk_id' => $idBK,
                                 'histories' => json_encode($transactions, true),
                                 'created_at' => $payments['created_at']
                             ]);

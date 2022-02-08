@@ -15,6 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('external')->default(true);
             $table->bigInteger('country_id')->nullable();
             $table->foreign('country_id')
                 ->references('id')

@@ -54,19 +54,19 @@
                     <div class="content mt-6 mb-6">
                         <h2 class="text-lg font-bold mb-4"><b>ИСТОРИЯ:</b></h2>
                         <ul>
-                            <li v-for="(value, key) in item['data']['stories']" :key="key">
+                            <li v-for="(value, key) in historiesSort" :key="key">
                                 {{ value }}
                             </li>
                         </ul>
                     </div>
                     <div class="bg-gray-50 p-6">
                         <div class="flex justify-between">
-                            <p class="font-bold text-lg"><b>Сумма:</b> {{ item['data']['cash'] }}</p>
-                            <p class="font-bold text-lg"><b>Статус: {{ item['data']['status']['value'] }}</b> </p>
+                            <p><span class="font-bold text-lg">Сумма:</span> {{ item['data']['cash'] }}</p>
+                            <p><span class="font-bold text-lg">Статус:</span> {{ item['data']['status']['value'] }}</p>
                         </div>
                         <div class="flex justify-between">
-                            <p class="font-bold text-lg"><b>Валюта:</b> {{ item['data']['currencies'] }}</p>
-                            <p class="font-bold text-lg"><b>Ответственный:</b> {{ item['data']['responsible']['name'] }}</p>
+                            <p><span class="font-bold text-lg">Валюта:</span> {{ item['data']['currencies'] }}</p>
+                            <p><span class="font-bold text-lg">Ответственный:</span> {{ item['data']['responsible']['name'] }}</p>
                         </div>
                         <div class="text-center mt-5">
                             <Link :href="route('bk.edit', item['data']['id'])">
@@ -102,6 +102,11 @@ export default defineComponent({
         },
         dialogEditClick: function () {
             this.dialogEdit = this.dialogEdit === false
+        }
+    },
+    computed: {
+        historiesSort: function () {
+            return this.item['data']['stories'].sort((a, b) => a.created_at > b.created_at ? 1 : -1)
         }
     },
     props: {

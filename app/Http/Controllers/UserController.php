@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Models\Bks;
+use App\Models\Statistics;
 use App\Models\User;
 use App\Resources\User\UsersResources;
 use Illuminate\Http\JsonResponse;
@@ -93,6 +95,15 @@ class UserController extends Controller
      */
     public function destroy(int $id): RedirectResponse
     {
+        // Update BK
+        Bks::where('responsible', $id)
+            ->update([
+                'responsible' => null
+            ]);
+        // Delete statistics
+        Statistics::where('responsible', $id)
+            ->delete();
+
         User::destroy([$id]);
         return redirect()->back();
     }
