@@ -151,12 +151,12 @@ class StatisticsController extends Controller
                 (int) $request->input('common.year')
             ) : Carbon::now()->year;
         return [
-            'cash' => DB::table('statistics')
+            'cash' => DB::table('bks')
                 ->select(
-                    DB::raw('sum(cash) as all'),
-                    DB::raw('sum(cash) filter (where status = \'active\') as active'),
-                    DB::raw('sum(cash) filter (where status = \'trouble\') as block'),
-                    DB::raw('sum(cash) filter (where status = \'withdrawn\') as withdrawn')
+                    DB::raw('sum(sum) as all'),
+                    DB::raw('sum(sum) filter (where status = \'active\') as active'),
+                    DB::raw('sum(sum) filter (where status = \'trouble\') as block'),
+                    DB::raw('sum(sum) filter (where status = \'withdrawn\') as withdrawn')
                 )
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year)

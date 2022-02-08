@@ -91,9 +91,7 @@
                                 </div>
                             </template>
                             <div class="col-span-6 sm:col-span-4 mt-4">
-                                <el-button type="primary" @click="addPayments">
-                                    Добавить <i class="lni lni-circle-plus"></i>
-                                </el-button>
+                                <el-button type="primary" @click="addPayments">Добавить</el-button>
                             </div>
                         </div>
                     </template>

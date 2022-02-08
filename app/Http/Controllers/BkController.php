@@ -87,9 +87,9 @@ class BkController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function distributionSave(Request $request): \Illuminate\Http\RedirectResponse
+    public function distributionSave(Request $request): \Illuminate\Http\JsonResponse
     {
         DB::beginTransaction();
         BkModel::where('id', (int) $request->input('id'))
@@ -99,10 +99,10 @@ class BkController extends Controller
             ]);
         if (! (new StatisticsController())->create($request->input('id'))) {
             DB::rollBack();
-            return redirect()->back();
+            return response()->json('Ошибка в статистике.', 500);
         }
         DB::commit();
-        return redirect()->back();
+        return response()->json('Ответственный добавлен.');
     }
 
     /**

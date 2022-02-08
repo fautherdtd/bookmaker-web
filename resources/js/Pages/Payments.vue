@@ -117,6 +117,11 @@
                               <p><b>Тип платежки:</b> {{ this.showItem['type']['title'] }}</p>
                           </div>
                       </div>
+                      <div class="flex justify-center mt-4" v-if="! this.showItem.external">
+                          <Link :href="route('payment.edit', this.showItem['id'])">
+                              <el-button type="primary">Отредактировать</el-button>
+                          </Link>
+                      </div>
                   </div>
                 </template>
             </el-dialog>
