@@ -104,7 +104,7 @@ class BkController extends Controller
      */
     public function show(int $id): \Inertia\Response
     {
-        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments', 'stories'])
+        $builder = BkModel::with(['country:id,name', 'bet:id,name', 'currencies:id,code,name', 'payments', 'payments.type', 'stories'])
             ->where('id', $id)
             ->first();
         return Inertia::render('Bk/Show', [
