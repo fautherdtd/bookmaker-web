@@ -49,7 +49,7 @@ class Payments extends Model
      */
     public function type(): HasOne
     {
-        return $this->hasOne(PaymentTypes::class, 'id', 'country_id');
+        return $this->hasOne(PaymentTypes::class, 'id', 'type_id');
     }
 
     /**

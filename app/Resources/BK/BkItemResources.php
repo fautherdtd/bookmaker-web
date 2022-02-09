@@ -46,7 +46,7 @@ class BkItemResources extends JsonResource
     {
         $payments = [];
         foreach ($this->payments as $payment) {
-            array_push( $payments, [
+            $payments[] = [
                 'id' => $payment->id,
                 'label' => implode(' ', [
                     'country' => $payment->country->name,
@@ -56,7 +56,7 @@ class BkItemResources extends JsonResource
                     'date' => $payment->created_at->format('d.m.Y'),
                 ]),
                 'children' => json_decode($payment->histories)
-            ]);
+            ];
         }
         return $payments;
     }
@@ -68,11 +68,11 @@ class BkItemResources extends JsonResource
     {
         $stories = [];
         foreach ($this->stories as $story) {
-            array_push($stories, implode(' - ', [
+            $stories[] = implode(' - ', [
                 $story->created_at->format('d.m.Y H:s'),
                 $story->user,
                 $story->action
-            ]));
+            ]);
         }
         return $stories;
     }
