@@ -17,7 +17,7 @@ class ExportData extends Command
      *
      * @var string
      */
-    protected $signature = 'data:export-bd';
+    protected $signature = 'data:export-db';
 
     /**
      * The console command description.
@@ -44,25 +44,21 @@ class ExportData extends Command
      */
     public function handle()
     {
-        try {
-            $this->payments($this->path . '/payments.csv');
-            $this->bks($this->path . '/bks.csv');
-            $this->users($this->path . '/users.csv');
-            PostgreSql::create()
-                ->setHost(env('DB_HOST'))
-                ->setDbName(env('DB_DATABASE'))
-                ->setUserName(env('DB_USERNAME'))
-                ->setPassword(env('DB_PASSWORD'))
-                ->dumpToFile($this->path . '/dump.sql');
-            $this->sendEmail([
-                $this->path . '/payments.csv',
-                $this->path . '/users.csv',
-                $this->path . '/bks.csv',
-                $this->path . '/dump.sql',
-            ]);
-        } catch (\Exception $exception) {
-            $this->error($exception->getTraceAsString());
-        }
+        $this->payments($this->path . '/payments.csv');
+        $this->bks($this->path . '/bks.csv');
+        $this->users($this->path . '/users.csv');
+        PostgreSql::create()
+            ->setHost(env('DB_HOST'))
+            ->setDbName(env('DB_DATABASE'))
+            ->setUserName(env('DB_USERNAME'))
+            ->setPassword(env('DB_PASSWORD'))
+            ->dumpToFile($this->path . '/dump.sql');
+        $this->sendEmail([
+            $this->path . '/payments.csv',
+            $this->path . '/users.csv',
+            $this->path . '/bks.csv',
+            $this->path . '/dump.sql',
+        ]);
     }
 
     /**

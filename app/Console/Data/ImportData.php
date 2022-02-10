@@ -44,7 +44,8 @@ class ImportData extends Command
      */
     public function handle(Carbon $carbon)
     {
-        $date = $carbon->now()->toDateString();
+//        $date = $carbon->now()->toDateString();
+        $date = '2022-02-09';
         for ($page = 1;/*  */; $page++) {
             $body = $this->request($date, $page);
             if (empty($body)) {

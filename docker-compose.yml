@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
     container_name: bookmaker-postgres
     ports:
-      - "5433:5432"
+      - "5436:5432"
     environment:
       - POSTGRES_USER=acc_sys
       - POSTGRES_PASSWORD=password

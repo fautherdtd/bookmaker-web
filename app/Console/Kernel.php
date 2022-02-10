@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->exec('php artisan data:import')->everyFiveMinutes();
         $schedule->exec('php artisan data:currencies')->daily();
-        $schedule->exec('php artisan data:export-bd')->daily();
+        $schedule->exec('php artisan data:export-db')->daily();
     }
 
     /**
