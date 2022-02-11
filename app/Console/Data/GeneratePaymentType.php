@@ -45,7 +45,7 @@ class GeneratePaymentType extends Command
             count($this->request())
         );
         foreach ($this->request() as $type) {
-            DB::table('currencies')
+            DB::table('payment_types')
                 ->updateOrInsert(
                     ['title' => $type->title],
                     ['title' => $type->title]
