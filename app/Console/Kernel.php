@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Data\ExportData;
 use App\Console\Data\GenerateCurrencies;
+use App\Console\Data\GeneratePaymentType;
 use App\Console\Data\ImportData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -18,7 +19,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         ImportData::class,
         GenerateCurrencies::class,
-        ExportData::class
+        ExportData::class,
+        GeneratePaymentType::class,
     ];
     /**
      * Define the application's command schedule.
@@ -31,6 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->exec('php artisan data:import')->everyFiveMinutes();
         $schedule->exec('php artisan data:currencies')->daily();
         $schedule->exec('php artisan data:export-db')->daily();
+        $schedule->exec('php artisan data:payments-type')->daily();
     }
 
     /**
