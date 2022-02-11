@@ -70,6 +70,6 @@ class GeneratePaymentType extends Command
         ]);
         $response = $client->request('get', 'payments-type');
         $content = json_decode($response->getBody(), true);
-        return $content['data'];
+        return $content;
     }
 }
