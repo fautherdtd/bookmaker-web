@@ -9,4 +9,7 @@ WORKDIR /app
 COPY ./ .
 
 RUN composer install --optimize-autoloader --no-scripts && rm -rf /root/.composer
+RUN chown -R www-data:www-data .
+USER www-data
+
 CMD ["php-fpm"]

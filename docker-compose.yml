@@ -30,8 +30,8 @@ services:
       - bookmaker-postgres
     env_file:
       - ./.env
-    volumes:
-      - ".:/app"
+#    volumes:
+#      - ".:/app"
     networks:
       - bookmaker-network
 
