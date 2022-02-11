@@ -21,12 +21,17 @@ use Inertia\Response;
 class PaymentController extends Controller
 {
     use Helpers;
+
     /**
+     * @param Request $request
      * @return Response
      */
     public function index(Request $request): Response
     {
-        $builder = Payments::with(['country', 'type']);
+        $builder = Payments::with(['country', 'type'])
+            ->whereHas('bk', function($query){
+                $query->where('status', '!=', 'new');
+            });
         if (! Auth::user()->hasRole(['administrator'])) {
             $builder->whereHas('bk', function($query){
                 $query->where('responsible', Auth::id());
