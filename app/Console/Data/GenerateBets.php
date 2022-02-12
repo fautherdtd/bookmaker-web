@@ -2,20 +2,18 @@
 
 namespace App\Console\Data;
 
-use App\Http\Controllers\Common\CurrencyConverter;
-use App\Models\Pivot\Currencies;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class GeneratePaymentType extends Command
+class GenerateBets extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'data:payments-type';
+    protected $signature = 'data:bets';
 
     /**
      * The console command description.
@@ -44,11 +42,11 @@ class GeneratePaymentType extends Command
         $bar = $this->output->createProgressBar(
             count($this->request())
         );
-        foreach ($this->request() as $type) {
-            DB::table('payment_types')
+        foreach ($this->request() as $bet) {
+            DB::table('bets')
                 ->updateOrInsert(
-                    ['title' => $type['title']],
-                    ['title' => $type['title']]
+                    ['name' => $bet['name']],
+                    ['name' => $bet['name']]
                 );
             $bar->advance();
         }
@@ -68,7 +66,7 @@ class GeneratePaymentType extends Command
                 'Authorization' => 'Bearer ' . getenv('API_ACC_SYS_TOKEN')
             ]
         ]);
-        $response = $client->request('get', 'payments-type');
+        $response = $client->request('get', 'bets');
         return json_decode($response->getBody(), true);
     }
 }

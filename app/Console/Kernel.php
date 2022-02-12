@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Data\ExportData;
+use App\Console\Data\GenerateBets;
 use App\Console\Data\GenerateCurrencies;
 use App\Console\Data\GeneratePaymentType;
 use App\Console\Data\ImportData;
@@ -21,6 +22,7 @@ class Kernel extends ConsoleKernel
         GenerateCurrencies::class,
         ExportData::class,
         GeneratePaymentType::class,
+        GenerateBets::class,
     ];
     /**
      * Define the application's command schedule.
@@ -34,6 +36,7 @@ class Kernel extends ConsoleKernel
         $schedule->exec('php artisan data:currencies')->daily();
         $schedule->exec('php artisan data:export-db')->daily();
         $schedule->exec('php artisan data:payments-type')->daily();
+        $schedule->exec('php artisan data:bets')->daily();
     }
 
     /**
