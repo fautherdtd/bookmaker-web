@@ -21,7 +21,7 @@
                     </template>
                     <template #form>
                         <div class="col-span-6 sm:col-span-4">
-                            <jet-label for="email" value="Почта" />
+                            <jet-label for="email" value="Логин" />
                             <jet-input id="email" type="text" class="mt-1 block w-full" v-model="form.email" />
                             <jet-input-error :message="form.errors.email" class="mt-2" />
                         </div>

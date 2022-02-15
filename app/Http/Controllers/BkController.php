@@ -34,7 +34,10 @@ class BkController extends Controller
         }
 
         if($request->has('withdrawn')) {
-            $builder->where('status', '!=', 'withdrawn');
+            $builder->where([
+                ['status', '!=', 'withdrawn'],
+                ['status', '!=', 'debiting']
+            ]);
         }
         foreach ($request->all() as $key => $value) {
             if ($request->has($key) && !$request->input('withdrawn')) {
@@ -157,6 +160,8 @@ class BkController extends Controller
         if ($request->input('info') != $model->info) {
             $actions[] = ['Доп.информация изменена с "' . $model->info . '" на "' . $request->input('info') . '"'];
             $model->info = $request->input('info');
+        } else {
+            $model->info = '';
         }
         if ($request->input('sum') != $model->sum) {
             $actions[] = ['Сумма изменена с "' . $model->sum . '" на "' . $request->input('sum') . '"'];

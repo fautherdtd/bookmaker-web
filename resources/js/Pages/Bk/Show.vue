@@ -19,7 +19,7 @@
                             <ul>
                                 <li><b>Страна:</b> {{ item['data']['country'] }}</li>
                                 <li><b>ФИО:</b> {{ item['data']['drop'] }}</li>
-                                <li><b>Почта:</b> {{ item['data']['email'] }}</li>
+                                <li><b>Логин:</b> {{ item['data']['email'] }}</li>
                                 <li><b>Пароль:</b> {{ item['data']['password'] }}</li>
                                 <li><b>Адрес:</b> {{ item['data']['address'] }}</li>
                                 <li><b>Документы:</b> {{ item['data']['document'] }}</li>

@@ -74,7 +74,7 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-5 mb-6 flex justify-between">
                 <label for="disable-bk">
                     <input type="checkbox" id="disable-bk" v-model="this.filter.withdrawn">
-                    Не отображать выведенный бк
+                    Не показывать выведенные и на списании
                 </label>
                 <button class="underline ml-3" @click="resetFilterTable">Сбросить фильтры</button>
             </div>
