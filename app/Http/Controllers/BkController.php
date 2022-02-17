@@ -191,6 +191,7 @@ class BkController extends Controller
                         ->with(['type', 'country'])
                         ->first();
                     $sum += $transaction['sum'];
+                    $model->sum_trans += $transaction['sum'];
                     $actions[] = ['Выведено на платежку '. implode(' ', [
                             $paymentModel['country']['name'],
                             $paymentModel['drop'],
