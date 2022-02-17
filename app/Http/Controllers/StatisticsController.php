@@ -34,7 +34,13 @@ class StatisticsController extends Controller
             ->select(
                 DB::raw('bk.status'),
                 DB::raw('count(bk.id) as handed'),
-                DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                DB::raw('sum(
+                    CASE
+                    WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum_trans / c.exchange)
+                    WHEN currency = \'EUR\' AND status = \'withdrawn\' THEN sum_trans
+                    WHEN currency != \'EUR\' THEN floor(sum / c.exchange)
+                    WHEN currency = \'EUR\' THEN sum END) as cash
+                    '),
                 DB::raw('count(bk.status)'),
             )
             ->where('bk.responsible', Auth::id())
@@ -106,7 +112,7 @@ class StatisticsController extends Controller
             ->select(
                 DB::raw('u.name'),
                 DB::raw('count(bk.id) as handed'),
-                DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) + floor(sum_trans / c.exchange) WHEN currency = \'EUR\' THEN sum + sum_trans END) as cash'),
                 DB::raw('count(bk.id) filter ( where status = \'withdrawn\' ) as withdrawn'),
                 DB::raw('sum(CASE
                     WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum_trans / c.exchange)
@@ -138,7 +144,7 @@ class StatisticsController extends Controller
                 ->join('currencies as c', 'bk.currency', '=', 'c.code')
                 ->select(
                     DB::raw('count(bk.id) as handed'),
-                    DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) WHEN currency = \'EUR\' THEN sum END) as cash'),
+                    DB::raw('sum(CASE WHEN currency != \'EUR\' THEN floor(sum / c.exchange) + floor(sum_trans / c.exchange) WHEN currency = \'EUR\' THEN sum + sum_trans END) as cash'),
                     DB::raw('count(bk.id) filter ( where bk.status = \'withdrawn\' ) as withdrawn'),
                     DB::raw('sum(CASE WHEN currency != \'EUR\' AND status = \'withdrawn\' THEN floor(sum_trans / c.exchange) WHEN currency = \'EUR\' AND status = \'withdrawn\' THEN floor(sum_trans) END) as withdrawnCash'),
                 )
