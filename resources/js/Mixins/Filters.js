@@ -158,7 +158,7 @@ export const Common = {
                 drop_guide: null,
                 status: null,
                 responsible: null,
-                withdrawn: null,
+                withdrawnCheck: null,
                 type_id: null,
             }
         }
