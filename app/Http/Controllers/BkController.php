@@ -33,7 +33,7 @@ class BkController extends Controller
             $builder->where('responsible', Auth::id());
         }
 
-        if($request->has('withdrawn')) {
+        if($request->has('withdrawnChek')) {
             $builder->where([
                 ['status', '!=', 'withdrawn'],
                 ['status', '!=', 'debiting']
