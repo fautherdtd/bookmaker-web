@@ -40,7 +40,7 @@ class BkController extends Controller
             ]);
         }
         foreach ($request->all() as $key => $value) {
-            if ($value === 'withdrawnChek') continue;
+            if ($key === 'withdrawnChek') continue;
             if ($request->has($key)) {
                 $builder->where($key, $value);
             }
