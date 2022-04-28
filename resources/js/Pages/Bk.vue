@@ -97,7 +97,7 @@
                     <el-table-column fixed="right" label="Действия" >
                         <template #default="scope">
                             <el-button-group class="ml-4">
-                                <i class="lni lni-reload" v-if="scope.row.touch_updated != null"></i>
+                                <i class="lni lni-reload mr-2" v-if="scope.row.touch_updated != null"></i>
                                 <Link :href="route('bk.show', scope.row.id)">
                                     <el-button type="primary">
                                         <i class="lni lni-eye"></i>
