@@ -56,6 +56,9 @@ class UpdateData extends Command
             }
             foreach ($body as $data) {
                 $model = Bks::where('id_external', $data['id'])->get();
+                if (empty($model)) {
+                    continue;
+                }
                 $actions = [];
                 if ($data['drop']['country_id'] != $model->country_id) {
                     $country = Countries::where('id', $data['drop']['country_id'])->pluck('name');
