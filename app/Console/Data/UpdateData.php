@@ -86,9 +86,9 @@ class UpdateData extends Command
                     $actions[] = ["(Обновление с 1 системы) Ссылка на документ с {$model->document} на {$data['drop']['src_document']}"];
                     $model->document = $data['drop']['src_document'];
                 }
-                if ($data['drop']['add_info'] != $model->info) {
-                    $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на {$data['drop']['add_info']}"];
-                    $model->info = $data['drop']['add_info'];
+                if ($data['add_info'] != $model->info) {
+                    $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на {$data['add_info']}"];
+                    $model->info = $data['add_info'];
                 }
                 if ($data['bet_id'] != $model->bet_id) {
                     $bet = Bets::where('id', $data['bet_id'])->pluck('name');
@@ -106,6 +106,7 @@ class UpdateData extends Command
                     $actions[] = ["(Обновление с 1 системы) Валюта изменена с {$currencyOld} на {$currency}"];
                     $model->currency = $data['currency'];
                 }
+                $model->touch_updated_at = $carbon->now();
                 $model->save();
                 foreach (array_values($actions) as $action) {
                     BkStories::create([

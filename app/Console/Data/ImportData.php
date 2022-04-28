@@ -65,6 +65,7 @@ class ImportData extends Command
                         'drop_guide' => $data['drop']['drop_guide']['name'],
                         'bet_id' => $data['bet_id'],
                         'sum' => $data['cash'],
+                        'sum_external' => $data['cash'],
                         'currency' => $data['currency'],
                         'id_external' => $data['id'],
                         'created_at' => $carbon->now(),
