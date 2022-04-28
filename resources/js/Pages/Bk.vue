@@ -107,7 +107,7 @@
                                         <i class="lni lni-pencil-alt"></i>
                                     </el-button>
                                 </Link>
-                                <i class="lni lni-reload mr-2" v-if="scope.row.touch_updated != null"></i>
+                                <i class="lni lni-reload ml-2" v-if="scope.row.touch_updated != null"></i>
                             </el-button-group>
                         </template>
                     </el-table-column>
