@@ -13,7 +13,7 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white p-10 overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="bg-indigo-50 content mt-6 mb-6" v-if="item['data']['touch_updated'] != null">
+                    <div class="bg-indigo-50 content mb-6" v-if="item['data']['touch_updated'] != null">
                         <p>Обновление пришло с первой системы: {{ item['data']['touch_updated'] }}</p>
                     </div>
                     <div class="flex justify-between">
