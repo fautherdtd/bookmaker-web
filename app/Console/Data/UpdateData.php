@@ -88,7 +88,7 @@ class UpdateData extends Command
                 }
                 if ($data['add_info'] != $model->info) {
                     $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на {$data['add_info']}"];
-                    $model->info = $data['add_info'];
+                    $model->info = $data['add_info'] ?? '-';
                 }
                 if ($data['bet_id'] != $model->bet_id) {
                     $bet = Bets::where('id', $data['bet_id'])->pluck('name');

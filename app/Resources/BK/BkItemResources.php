@@ -31,6 +31,7 @@ class BkItemResources extends JsonResource
                 'key' => $this->status,
                 'value' => $this->statuses,
             ],
+            'touch_updated' => $this->touch_updated_at,
             'responsible' => [
                 'id' => $this->responsible,
                 'name' => $this->userResponsible->name

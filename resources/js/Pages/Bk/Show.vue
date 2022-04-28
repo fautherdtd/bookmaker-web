@@ -59,6 +59,9 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="content mt-6 mb-6" v-if="item['touch_updated'] != null">
+                        <p>Обновление пришло с первой системы: {{ item['touch_updated'] }}</p>
+                    </div>
                     <div class="bg-gray-50 p-6">
                         <div class="flex justify-between">
                             <p><span class="font-bold text-lg">Сумма:</span> {{ item['data']['cash'] }}</p>
