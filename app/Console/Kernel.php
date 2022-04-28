@@ -7,6 +7,7 @@ use App\Console\Data\GenerateBets;
 use App\Console\Data\GenerateCurrencies;
 use App\Console\Data\GeneratePaymentType;
 use App\Console\Data\ImportData;
+use App\Console\Data\UpdateData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -23,6 +24,7 @@ class Kernel extends ConsoleKernel
         ExportData::class,
         GeneratePaymentType::class,
         GenerateBets::class,
+        UpdateData::class
     ];
     /**
      * Define the application's command schedule.
