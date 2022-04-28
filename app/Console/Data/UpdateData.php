@@ -86,7 +86,7 @@ class UpdateData extends Command
                     $actions[] = ["(Обновление с 1 системы) Ссылка на документ с ". $model->document ." на {$data['drop']['src_document']}"];
                     $model->document = $data['drop']['src_document'];
                 }
-                if ($data['add_info'] != $model->info && $model->info != null) {
+                if ($data['add_info'] != $model->info && $data['add_info'] != null) {
                     $dopInfo = $data['add_info'] ?? "-";
                     $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на ". $dopInfo];
                     $model->info = $data['add_info'] ?? '-';
