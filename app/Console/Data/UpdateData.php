@@ -107,6 +107,7 @@ class UpdateData extends Command
                     $actions[] = ["(Обновление с 1 системы) Валюта изменена с ". $currencyOld ." на {$currency}"];
                     $model->currency = $data['currency'];
                 }
+                $model->sum_external = $data['cash'];
                 $model->touch_updated_at = $carbon->now();
                 $model->save();
                 foreach (array_values($actions) as $action) {
