@@ -87,7 +87,8 @@ class UpdateData extends Command
                     $model->document = $data['drop']['src_document'];
                 }
                 if ($data['add_info'] != $model->info) {
-                    $actions[] = ["(Обновление с 1 системы) Доп.информация с ". $model->info ." на {$data['add_info']}"];
+                    $dopInfo = $data['add_info'] ?? "-";
+                    $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на ". $dopInfo];
                     $model->info = $data['add_info'] ?? '-';
                 }
                 if ($data['bet_id'] != $model->bet_id) {
