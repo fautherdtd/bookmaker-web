@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->exec('php artisan data:import')->everyFiveMinutes();
+        $schedule->exec('php artisan data:updated')->everyFourHours();
         $schedule->exec('php artisan data:currencies')->daily();
         $schedule->exec('php artisan data:export-db')->daily();
         $schedule->exec('php artisan data:payments-type')->daily();
