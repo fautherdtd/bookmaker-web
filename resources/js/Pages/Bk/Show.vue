@@ -13,6 +13,9 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white p-10 overflow-hidden shadow-xl sm:rounded-lg">
+                    <div class="bg-indigo-50 content mt-6 mb-6" v-if="item['data']['touch_updated'] != null">
+                        <p>Обновление пришло с первой системы: {{ item['data']['touch_updated'] }}</p>
+                    </div>
                     <div class="flex justify-between">
                         <div class="content">
                             <h2 class="text-lg font-bold mb-4"><b>ОБЩАЯ ИНФОРМАЦИЯ:</b></h2>
@@ -58,9 +61,6 @@
                                 {{ value }}
                             </li>
                         </ul>
-                    </div>
-                    <div class="content mt-6 mb-6" v-if="item['touch_updated'] != null">
-                        <p>Обновление пришло с первой системы: {{ item['touch_updated'] }}</p>
                     </div>
                     <div class="bg-gray-50 p-6">
                         <div class="flex justify-between">
