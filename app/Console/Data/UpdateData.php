@@ -55,8 +55,7 @@ class UpdateData extends Command
                 break;
             }
             foreach ($body as $data) {
-                $model = Bks::where('id_external', $data['id'])->get();
-                dd($model);
+                $model = Bks::where('id_external', $data['id'])->first();
                 if (empty($model)) {
                     continue;
                 }
