@@ -44,10 +44,10 @@ class GenerateBets extends Command
         );
         foreach ($this->request() as $bet) {
             DB::table('bets')
-                ->updateOrInsert(
-                    ['name' => $bet['name']],
-                    ['name' => $bet['name']]
-                );
+                ->insert([
+                    'id' => $bet['id'],
+                    'name' => $bet['name']
+                ]);
             $bar->advance();
         }
         $bar->finish();

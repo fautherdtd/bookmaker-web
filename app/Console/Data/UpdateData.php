@@ -63,47 +63,47 @@ class UpdateData extends Command
                 if ($data['drop']['country_id'] != $model->country_id) {
                     $country = Countries::where('id', $data['drop']['country_id'])->pluck('name');
                     $countryOld = Countries::where('id', $model->country_id)->pluck('name');
-                    $actions[] = ["(Обновление с 1 системы) Страна с {$countryOld} на {$country}"];
+                    $actions[] = ["(Обновление с 1 системы) Страна с ". $countryOld ." на {$country}"];
                     $model->email = $data['drop']['country_id'];
                 }
                 if ($data['drop']['name'] != $model->drop) {
-                    $actions[] = ["(Обновление с 1 системы) Дроп с {$model->drop} на {$data['drop']['name']}"];
+                    $actions[] = ["(Обновление с 1 системы) Дроп с ". $model->drop . " на {$data['drop']['name']}"];
                     $model->drop = $data['drop']['name'];
                 }
                 if ($data['drop']['login_mail'] != $model->email) {
-                    $actions[] = ["(Обновление с 1 системы) Логин с {$model->email} на {$data['drop']['login_mail']}"];
+                    $actions[] = ["(Обновление с 1 системы) Логин с ". $model->email ." на {$data['drop']['login_mail']}"];
                     $model->email = $data['drop']['login_mail'];
                 }
                 if ($data['drop']['password_mail'] != $model->password) {
-                    $actions[] = ["(Обновление с 1 системы) Пароль с {$model->password} на {$data['drop']['password']}"];
+                    $actions[] = ["(Обновление с 1 системы) Пароль с " . $model->password . " на {$data['drop']['password']}"];
                     $model->password = $data['drop']['password_mail'];
                 }
                 if ($data['drop']['address'] != $model->address) {
-                    $actions[] = ["(Обновление с 1 системы) Адрес с {$model->address} на {$data['drop']['address']}"];
+                    $actions[] = ["(Обновление с 1 системы) Адрес с ". $model->address ." на {$data['drop']['address']}"];
                     $model->address = $data['drop']['address'];
                 }
                 if ($data['drop']['src_document'] != $model->document) {
-                    $actions[] = ["(Обновление с 1 системы) Ссылка на документ с {$model->document} на {$data['drop']['src_document']}"];
+                    $actions[] = ["(Обновление с 1 системы) Ссылка на документ с ". $model->document ." на {$data['drop']['src_document']}"];
                     $model->document = $data['drop']['src_document'];
                 }
                 if ($data['add_info'] != $model->info) {
-                    $actions[] = ["(Обновление с 1 системы) Доп.информация с {$model->info} на {$data['add_info']}"];
+                    $actions[] = ["(Обновление с 1 системы) Доп.информация с ". $model->info ." на {$data['add_info']}"];
                     $model->info = $data['add_info'] ?? '-';
                 }
                 if ($data['bet_id'] != $model->bet_id) {
                     $bet = Bets::where('id', $data['bet_id'])->pluck('name');
                     $betOld = Bets::where('id', $data['bet_id'])->pluck('name');
-                    $actions[] = ["(Обновление с 1 системы) БК с {$betOld} на {$bet}"];
+                    $actions[] = ["(Обновление с 1 системы) БК с ". $betOld ." на {$bet}"];
                     $model->bet_id = $data['bet_id'];
                 }
                 if ($data['cash'] != $model->sum_external) {
-                    $actions[] = ["(Обновление с 1 системы) Сумма изменена с {$model->sum_external} на {$data['cash']}"];
+                    $actions[] = ["(Обновление с 1 системы) Сумма изменена с ". $model->sum_external ." на {$data['cash']}"];
                     $model->sum = $data['cash'];
                 }
                 if ($data['currency'] != $model->currency) {
                     $currency = Currencies::where('code', $data['currency'])->pluck('name');
                     $currencyOld = Currencies::where('code', $model->currency)->pluck('name');
-                    $actions[] = ["(Обновление с 1 системы) Валюта изменена с {$currencyOld} на {$currency}"];
+                    $actions[] = ["(Обновление с 1 системы) Валюта изменена с ". $currencyOld ." на {$currency}"];
                     $model->currency = $data['currency'];
                 }
                 $model->touch_updated_at = $carbon->now();
