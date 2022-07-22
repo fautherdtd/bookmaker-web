@@ -24,6 +24,8 @@
                                 <li><b>ФИО:</b> {{ item['data']['drop'] }}</li>
                                 <li><b>Логин:</b> {{ item['data']['email'] }}</li>
                                 <li><b>Пароль:</b> {{ item['data']['password'] }}</li>
+                                <li><b>Логин БК:</b> {{ item['data']['login_bk'] }}</li>
+                                <li><b>Пароль БК:</b> {{ item['data']['pass_bk'] }}</li>
                                 <li><b>Адрес:</b> {{ item['data']['address'] }}</li>
                                 <li><b>Документы:</b> {{ item['data']['document'] }}</li>
                                 <li><b>Доп.информация:</b> {{ item['data']['info'] }}</li>

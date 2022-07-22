@@ -15,6 +15,8 @@ class BkItemResources extends JsonResource
             'drop' => $this->drop,
             'email' => $this->email,
             'password' => $this->password,
+            'login_bk' => $this->email,
+            'pass_bk' => $this->password,
             'address' => $this->address,
             'document' => $this->document,
             'info' => $this->info,

@@ -59,6 +59,8 @@ class ImportData extends Command
                         'drop' => $data['drop']['name'],
                         'email' => $data['drop']['login_mail'] ?? '-',
                         'password' => $data['drop']['password_mail'] ?? '-',
+                        'login_bk' => $data['login'] ?? '-',
+                        'pass_bk' => $data['password'] ?? '-',
                         'address' => $data['drop']['address'] ?? '-',
                         'document' => $data['drop']['src_document'] ?? '-',
                         'info' => $data['add_info'] ?? '-',
