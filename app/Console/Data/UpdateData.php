@@ -78,6 +78,14 @@ class UpdateData extends Command
                     $actions[] = ["(Обновление с 1 системы) Пароль с " . $model->password . " на {$data['drop']['password']}"];
                     $model->password = $data['drop']['password_mail'];
                 }
+                if ($data['login'] != $model->login_bk) {
+                    $actions[] = ["(Обновление с 1 системы) Логин БК с ". $model->email ." на {$data['drop']['login_mail']}"];
+                    $model->login_bk = $data['login'];
+                }
+                if ($data['password'] != $model->pass_bk) {
+                    $actions[] = ["(Обновление с 1 системы) Пароль БК с " . $model->password . " на {$data['drop']['password']}"];
+                    $model->pass_bk = $data['password'];
+                }
                 if ($data['drop']['address'] != $model->address) {
                     $actions[] = ["(Обновление с 1 системы) Адрес с ". $model->address ." на {$data['drop']['address']}"];
                     $model->address = $data['drop']['address'];
